@@ -1,3 +1,8 @@
+use clap::Clap;
+use rustfm::app::Opts;
+
 fn main() {
-    println!("Hello, world!");
+    let opts = Opts::parse();
+
+    println!("Your last.fm username is `{}`", &opts.username)
 }
