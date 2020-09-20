@@ -21,7 +21,9 @@ async fn main() -> Result<()> {
 
         println!("Enter your Last.fm API key: ");
         let mut api_key = String::new();
-        io::stdin().read_line(&mut api_key).expect("Failed to read api key");
+        io::stdin()
+            .read_line(&mut api_key)
+            .expect("Failed to read api key");
 
         let config = Config::new(api_key);
         config.save_config()?;
@@ -39,7 +41,11 @@ async fn main() -> Result<()> {
     println!("\nFetching tracks...");
     let tracks = fetch_tracks(&user, &config.api_key, 1, 200, 0).await?;
 
-    println!("\nTotal Tracks: {} (Expected {})", &tracks.len(), &user.play_count());
+    println!(
+        "\nTotal Tracks: {} (Expected {})",
+        &tracks.len(),
+        &user.play_count()
+    );
 
     println!("\nDone!");
 
@@ -59,8 +65,13 @@ async fn fetch_profile(username: &str, api_key: &str) -> Result<User> {
     Ok(user_response.user)
 }
 
-
-async fn fetch_tracks(user: &User, api_key: &str, page: i32, limit: i32, from: i64) -> Result<Vec<Track>> {
+async fn fetch_tracks(
+    user: &User,
+    api_key: &str,
+    page: i32,
+    limit: i32,
+    from: i64,
+) -> Result<Vec<Track>> {
     use rayon::prelude::*;
 
     let tracks: Mutex<Vec<Track>> = Mutex::new(Vec::new());

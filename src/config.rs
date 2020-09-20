@@ -23,9 +23,7 @@ pub struct Config {
 
 impl Config {
     pub fn new(api_key: String) -> Self {
-        Self {
-            api_key
-        }
+        Self { api_key }
     }
 
     pub fn check_if_config_exists() -> bool {

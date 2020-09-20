@@ -2,7 +2,7 @@ use chrono::prelude::*;
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
 pub struct UserResponse {
-    pub user: User
+    pub user: User,
 }
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
@@ -117,7 +117,6 @@ pub struct Date {
 
 impl Date {
     pub fn time_stamp(&self) -> NaiveDateTime {
-
         let timestamp: i64 = self.uts.parse().unwrap();
         let dt = NaiveDateTime::from_timestamp(timestamp, 0);
 
