@@ -73,29 +73,35 @@ async fn fetch_tracks(
     from: i64,
 ) -> Result<Vec<Track>> {
     use rayon::prelude::*;
+    use indicatif::ParallelProgressIterator;
+    use indicatif::ProgressBar;
 
     let tracks: Mutex<Vec<Track>> = Mutex::new(Vec::new());
 
     let number_of_pages = round::ceil(user.play_count() as f64 / limit as f64, 0) as i32;
 
-    (page..=number_of_pages).into_par_iter()
-        .for_each(|page| {
-            print!("\rFetching page {} of {}...", page, number_of_pages);
+    let pages = (page..=number_of_pages).collect::<Vec<i32>>();
 
-            let url = format!("http://ws.audioscrobbler.com/2.0/?method={method}&user={user}&api_key={api_key}&format=json&page={page}&limit={limit}&from={from}",
-                              method = "user.getRecentTracks",
-                              user = user.name,
-                              api_key = api_key,
-                              page = page,
-                              limit = limit,
-                              from = from);
+    let bar = ProgressBar::new(pages.len() as u64);
 
-            let recent_tracks_response: RecentTracksResponse = reqwest::blocking::get(&url).unwrap().json().unwrap();
-            let mut recent_tracks = recent_tracks_response.recent_tracks.tracks;
+    pages.par_iter().for_each(|page| {
+        bar.inc(1);
 
-            let mut db = tracks.lock().map_err(|_| "Failed to acquire MutexGuard").unwrap();
-            db.append(&mut recent_tracks);
-        });
+        let url = format!("http://ws.audioscrobbler.com/2.0/?method={method}&user={user}&api_key={api_key}&format=json&page={page}&limit={limit}&from={from}",
+                          method = "user.getRecentTracks",
+                          user = user.name,
+                          api_key = api_key,
+                          page = page,
+                          limit = limit,
+                          from = from);
+
+        let recent_tracks_response: RecentTracksResponse = reqwest::blocking::get(&url).unwrap().json().unwrap();
+        let mut recent_tracks = recent_tracks_response.recent_tracks.tracks;
+
+        let mut db = tracks.lock().map_err(|_| "Failed to acquire MutexGuard").unwrap();
+        db.append(&mut recent_tracks);
+    });
+    bar.finish();
 
     Ok(tracks.into_inner().unwrap())
 }
