@@ -1,4 +1,4 @@
-use std::io;
+use std::{io, thread, time};
 use std::process;
 use std::sync::Mutex;
 
@@ -9,6 +9,7 @@ use math::round;
 use rustfm::app::Opts;
 use rustfm::config::Config;
 use rustfm::models::{RecentTracksResponse, Track, User, UserResponse};
+use rand::Rng;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -73,7 +74,6 @@ async fn fetch_tracks(
     from: i64,
 ) -> Result<Vec<Track>> {
     use rayon::prelude::*;
-    use indicatif::ParallelProgressIterator;
     use indicatif::ProgressBar;
 
     let tracks: Mutex<Vec<Track>> = Mutex::new(Vec::new());
@@ -100,8 +100,17 @@ async fn fetch_tracks(
 
         let mut db = tracks.lock().map_err(|_| "Failed to acquire MutexGuard").unwrap();
         db.append(&mut recent_tracks);
+
+        thread::sleep(gen_random_duration());
     });
     bar.finish();
 
     Ok(tracks.into_inner().unwrap())
+}
+
+fn gen_random_duration() -> time::Duration {
+    let mut rng = rand::thread_rng();
+
+    let duration = rng.gen_range(250, 500);
+    time::Duration::from_millis(duration)
 }

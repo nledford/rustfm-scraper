@@ -12,6 +12,7 @@ crossbeam = "0.7.3"
 dirs = "3.0.1"
 indicatif = { version = "0.15.0", features = [ "rayon" ] }
 libmath = "0.2.1"
+rand = "0.7.3"
 rayon = "1.4.0"
 reqwest = { version = "0.10", features = [ "blocking", "json" ] }
 serde = { version = "1.0.116", features = [ "derive" ] }

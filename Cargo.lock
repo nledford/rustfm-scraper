@@ -1133,6 +1133,7 @@ dependencies = [
  "dirs",
  "indicatif",
  "libmath",
+ "rand 0.7.3",
  "rayon",
  "reqwest",
  "serde",
