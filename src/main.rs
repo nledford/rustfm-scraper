@@ -1,4 +1,5 @@
 use clap::Clap;
+
 use rustfm::app::Opts;
 
 fn main() {
