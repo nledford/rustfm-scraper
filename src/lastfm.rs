@@ -1,12 +1,10 @@
 use std::sync::Mutex;
-use std::thread;
 
 use anyhow::Result;
+use futures::prelude::*;
 use indicatif::ProgressBar;
-use reqwest::blocking::Client;
 
 use crate::models::{Attr, RecentTracksResponse, Track, User, UserResponse};
-use crate::utils;
 
 fn build_request_url(user: &User, api_key: &str, page: i32, limit: i32, from: i64, to: i64) -> String {
     format!("http://ws.audioscrobbler.com/2.0/?method={method}&user={user}&api_key={api_key}&format=json&extended=1&page={page}&limit={limit}&from={from}&to={to}",
@@ -49,31 +47,28 @@ pub async fn fetch_tracks(
     }
 
     println!("\nFetching tracks...");
-    if metadata.single_page() {
-        let url = build_request_url(user, api_key, page, limit, from, to);
-        let recent_tracks_response: RecentTracksResponse = reqwest::get(&url).await.unwrap().json().await.unwrap();
-
-        return Ok(recent_tracks_response.recent_tracks.tracks);
-    }
 
     let tracks: Mutex<Vec<Track>> = Mutex::new(Vec::new());
+    let urls: Vec<String> = (1..=metadata.total_pages()).map(|p| {
+        build_request_url(user, api_key, p, limit, from, to)
+    }).collect();
 
-    let pages = (page..=metadata.total_pages()).collect::<Vec<i32>>();
-    let bar = ProgressBar::new(pages.len() as u64);
-    let client = Client::new();
-    pages.iter().for_each(|page| {
-        bar.inc(1);
+    let bar = ProgressBar::new(metadata.total_pages() as u64);
+    let responses = stream::iter(urls)
+        .map(|url| {
+            let client = reqwest::Client::new();
+            bar.inc(1);
+            tokio::spawn(async move {
+                let rtr: RecentTracksResponse = client.get(&url).send().await.unwrap().json().await.unwrap();
+                rtr.recent_tracks.tracks
+            })
+        }).buffer_unordered(12);
 
-        let url = build_request_url(user, api_key, *page, limit, from, to);
-        let recent_tracks_response: RecentTracksResponse = client.get(&url).send().unwrap().json().unwrap();
-        let mut recent_tracks = recent_tracks_response.recent_tracks.tracks;
-
+    responses.for_each(|t| async {
+        let mut recent_tracks = t.unwrap();
         let mut db = tracks.lock().map_err(|_| "Failed to acquire MutexGuard").unwrap();
         db.append(&mut recent_tracks);
-
-        thread::sleep(utils::gen_random_duration());
-    });
-    bar.finish();
+    }).await;
 
     Ok(tracks.into_inner().unwrap())
 }
