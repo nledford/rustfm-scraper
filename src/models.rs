@@ -84,6 +84,14 @@ impl Attr {
     pub fn last_page(&self) -> bool {
         self.page() == self.total_pages()
     }
+
+    pub fn single_page(&self) -> bool {
+        self.total_pages() == 1
+    }
+
+    pub fn single_track(&self) -> bool {
+        self.total_tracks() == 1
+    }
 }
 
 // TODO add field when listening to track
