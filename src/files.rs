@@ -1,5 +1,6 @@
-use crate::models::{Track, SavedTrack};
 use std::env;
+
+use crate::models::{SavedTrack, Track};
 
 pub fn save_to_csv(tracks: Vec<Track>) {
     let current_dir = env::current_dir().unwrap();

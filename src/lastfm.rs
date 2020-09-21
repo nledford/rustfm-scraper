@@ -6,7 +6,14 @@ use indicatif::ProgressBar;
 
 use crate::models::{Attr, RecentTracksResponse, Track, User, UserResponse};
 
-fn build_request_url(user: &User, api_key: &str, page: i32, limit: i32, from: i64, to: i64) -> String {
+fn build_request_url(
+    user: &User,
+    api_key: &str,
+    page: i32,
+    limit: i32,
+    from: i64,
+    to: i64,
+) -> String {
     format!("http://ws.audioscrobbler.com/2.0/?method={method}&user={user}&api_key={api_key}&format=json&extended=1&page={page}&limit={limit}&from={from}&to={to}",
             method = "user.getRecentTracks",
             user = user.name,
@@ -41,17 +48,24 @@ pub async fn fetch_tracks(
     if metadata.single_page() && metadata.single_track() {
         println!("Fetching one new track...");
     } else if metadata.single_page() {
-        println!("Fetching {} tracks from one page...", metadata.total_tracks());
+        println!(
+            "Fetching {} tracks from one page...",
+            metadata.total_tracks()
+        );
     } else {
-        println!("Fetching {} tracks from {} pages...", metadata.total_tracks(), metadata.total_pages());
+        println!(
+            "Fetching {} tracks from {} pages...",
+            metadata.total_tracks(),
+            metadata.total_pages()
+        );
     }
 
     println!("\nFetching tracks...");
 
     let tracks: Mutex<Vec<Track>> = Mutex::new(Vec::new());
-    let urls: Vec<String> = (1..=metadata.total_pages()).map(|p| {
-        build_request_url(user, api_key, p, limit, from, to)
-    }).collect();
+    let urls: Vec<String> = (1..=metadata.total_pages())
+        .map(|p| build_request_url(user, api_key, p, limit, from, to))
+        .collect();
 
     let bar = ProgressBar::new(metadata.total_pages() as u64);
     let responses = stream::iter(urls)
@@ -59,16 +73,23 @@ pub async fn fetch_tracks(
             let client = reqwest::Client::new();
             bar.inc(1);
             tokio::spawn(async move {
-                let rtr: RecentTracksResponse = client.get(&url).send().await.unwrap().json().await.unwrap();
+                let rtr: RecentTracksResponse =
+                    client.get(&url).send().await.unwrap().json().await.unwrap();
                 rtr.recent_tracks.tracks
             })
-        }).buffer_unordered(12);
+        })
+        .buffer_unordered(12);
 
-    responses.for_each(|t| async {
-        let mut recent_tracks = t.unwrap();
-        let mut db = tracks.lock().map_err(|_| "Failed to acquire MutexGuard").unwrap();
-        db.append(&mut recent_tracks);
-    }).await;
+    responses
+        .for_each(|t| async {
+            let mut recent_tracks = t.unwrap();
+            let mut db = tracks
+                .lock()
+                .map_err(|_| "Failed to acquire MutexGuard")
+                .unwrap();
+            db.append(&mut recent_tracks);
+        })
+        .await;
 
     Ok(tracks.into_inner().unwrap())
 }
