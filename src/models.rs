@@ -73,6 +73,10 @@ impl Attr {
         self.per_page.parse().unwrap_or(0)
     }
 
+    pub fn total_tracks(&self) -> i32 {
+        self.total.parse().unwrap_or(0)
+    }
+
     pub fn total_pages(&self) -> i32 {
         self.total_pages.parse().unwrap_or(0)
     }
