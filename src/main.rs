@@ -5,7 +5,7 @@ use clap::Clap;
 
 use rustfm::app::{Opts, SubCommand};
 use rustfm::config::Config;
-use rustfm::{lastfm, utils};
+use rustfm::{lastfm, utils, files};
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -78,7 +78,10 @@ async fn main() -> Result<()> {
             tracks.sort_unstable_by_key(|t| t.date.time_stamp());
             tracks.reverse();
 
-            println!("\nTotal Tracks: {}", &tracks.len(),);
+            println!("\nTotal Tracks: {}", &tracks.len());
+
+            println!("Test writing to CSV file...");
+            files::save_to_csv(tracks);
 
             println!("\nDone!");
         }

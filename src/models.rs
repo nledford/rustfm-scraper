@@ -104,6 +104,27 @@ pub struct Track {
     pub date: Date,
     pub name: String,
     pub mbid: String,
+    loved: String,
+}
+
+impl PartialEq for Track {
+    fn eq(&self, other: &Self) -> bool {
+        self.combined_title().eq(&other.combined_title())
+    }
+}
+
+impl Track {
+    pub fn combined_title(&self) -> String {
+        format!("{} - {} - {}", self.name, self.artist.name, self.album.text)
+    }
+
+    pub fn loved(&self) -> bool {
+        if self.loved == "0" {
+            false
+        } else {
+            true
+        }
+    }
 }
 
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
@@ -145,5 +166,34 @@ impl Date {
         let dt = self.datetime_utc().naive_utc();
 
         Local::from_utc_datetime(&Local, &dt)
+    }
+}
+
+// ############################################################################
+
+#[derive(serde::Serialize, serde::Deserialize)]
+pub struct SavedTrack {
+    pub title: String,
+    pub artist: String,
+    pub album: String,
+    pub loved: bool,
+    pub datetime_local: DateTime<Local>,
+    pub timestamp_utc: i64,
+}
+
+impl SavedTrack {
+    pub fn from_track(track: &Track) -> Self {
+        Self {
+            title: track.name.to_string(),
+            artist: track.artist.name.to_string(),
+            album: track.album.text.to_string(),
+            loved: track.loved(),
+            datetime_local: track.date.datetime_local(),
+            timestamp_utc: track.date.time_stamp(),
+        }
+    }
+
+    pub fn combined_title(&self) -> String {
+        format!("{} - {} - {}", self.title, self.artist, self.album)
     }
 }
