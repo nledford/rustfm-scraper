@@ -157,7 +157,8 @@ impl Date {
     }
 
     pub fn datetime_utc(&self) -> DateTime<Utc> {
-        let dt = DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(self.time_stamp(), 0), Utc);
+        let dt =
+            DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(self.time_stamp(), 0), Utc);
 
         dt
     }

@@ -5,7 +5,7 @@ use clap::Clap;
 
 use rustfm::app::{Opts, SubCommand};
 use rustfm::config::Config;
-use rustfm::{lastfm, utils, files};
+use rustfm::{files, lastfm, utils};
 
 #[tokio::main]
 async fn main() -> Result<()> {
