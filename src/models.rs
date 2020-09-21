@@ -96,9 +96,9 @@ pub struct Track {
 
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
 pub struct Artist {
+    pub url: String,
     pub mbid: String,
-    #[serde(rename = "#text")]
-    pub text: String,
+    pub name: String,
 }
 
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
