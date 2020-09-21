@@ -34,6 +34,7 @@ pub async fn fetch_profile(username: &str, api_key: &str) -> Result<User> {
     Ok(user_response.user)
 }
 
+// REFERENCE: https://stackoverflow.com/a/51047786
 pub async fn fetch_tracks(
     user: &User,
     api_key: &str,
