@@ -3,10 +3,10 @@ use std::thread;
 
 use anyhow::Result;
 use indicatif::ProgressBar;
+use reqwest::blocking::Client;
 
 use crate::models::{Attr, RecentTracksResponse, Track, User, UserResponse};
 use crate::utils;
-use reqwest::blocking::Client;
 
 fn build_request_url(user: &User, api_key: &str, page: i32, limit: i32, from: i64, to: i64) -> String {
     format!("http://ws.audioscrobbler.com/2.0/?method={method}&user={user}&api_key={api_key}&format=json&extended=1&page={page}&limit={limit}&from={from}&to={to}",

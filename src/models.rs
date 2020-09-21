@@ -128,10 +128,22 @@ pub struct Date {
 }
 
 impl Date {
-    pub fn time_stamp(&self) -> NaiveDateTime {
+    pub fn time_stamp(&self) -> i64 {
         let timestamp: i64 = self.uts.parse().unwrap();
         let dt = NaiveDateTime::from_timestamp(timestamp, 0);
 
+        dt.timestamp()
+    }
+
+    pub fn datetime_utc(&self) -> DateTime<Utc> {
+        let dt = DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(self.time_stamp(), 0), Utc);
+
         dt
+    }
+
+    pub fn datetime_local(&self) -> DateTime<Local> {
+        let dt = self.datetime_utc().naive_utc();
+
+        Local::from_utc_datetime(&Local, &dt)
     }
 }

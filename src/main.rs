@@ -72,10 +72,11 @@ async fn main() -> Result<()> {
                 None => utils::get_current_unix_timestamp(),
             };
 
-            let tracks =
+            let mut tracks =
                 lastfm::fetch_tracks(&user, &config.api_key, page, limit, from, to).await?;
 
-            // tracks.sort_unstable_by_key(|t| t.date.time_stamp());
+            tracks.sort_unstable_by_key(|t| t.date.time_stamp());
+            tracks.reverse();
 
             println!("\nTotal Tracks: {}", &tracks.len(),);
 
