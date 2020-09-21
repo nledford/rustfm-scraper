@@ -14,8 +14,8 @@ indicatif = { version = "0.15.0", features = [ "rayon" ] }
 libmath = "0.2.1"
 rand = "0.7.3"
 rayon = "1.4.0"
-reqwest = { version = "0.10", features = [ "blocking", "json" ] }
+reqwest = { version = "0.10.8", features = [ "blocking", "json" ] }
 serde = { version = "1.0.116", features = [ "derive" ] }
 serde_json = "1.0.57"
 thiserror = "1.0.20"
-tokio = { version = "0.2", features = [ "full" ] }
+tokio = { version = "0.2.22", features = [ "full" ] }
