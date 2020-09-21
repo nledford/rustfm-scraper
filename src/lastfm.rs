@@ -37,8 +37,6 @@ pub async fn fetch_tracks(
     from: i64,
     to: i64,
 ) -> Result<Vec<Track>> {
-    use rayon::prelude::*;
-
     println!("\nFetching metadata...");
     let metadata = fetch_tracks_metadata(user, api_key, page, limit, from, to).await?;
 
@@ -63,7 +61,7 @@ pub async fn fetch_tracks(
     let pages = (page..=metadata.total_pages()).collect::<Vec<i32>>();
     let bar = ProgressBar::new(pages.len() as u64);
     let client = Client::new();
-    pages.par_iter().for_each(|page| {
+    pages.iter().for_each(|page| {
         bar.inc(1);
 
         let url = build_request_url(user, api_key, *page, limit, from, to);
