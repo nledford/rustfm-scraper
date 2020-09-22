@@ -95,7 +95,6 @@ pub async fn fetch_tracks(
                     }
                 };
 
-
                 recent_tracks
             });
 

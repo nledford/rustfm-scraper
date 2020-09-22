@@ -1196,7 +1196,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "rustfm"
+name = "rustfm-scraper"
 version = "0.1.0"
 dependencies = [
  "anyhow",

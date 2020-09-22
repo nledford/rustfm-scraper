@@ -1,5 +1,5 @@
 [package]
-name = "rustfm"
+name = "rustfm-scraper"
 version = "0.1.0"
 authors = [ "Nathaniel Ledford <nate@nateledford.com>" ]
 edition = "2018"
