@@ -102,7 +102,7 @@ pub struct Track {
     pub album: Album,
     // Skip `image`
     pub streamable: String,
-    pub date: Date,
+    pub date: Option<Date>,
     pub name: String,
     pub mbid: String,
     loved: String,
@@ -138,6 +138,10 @@ impl Track {
             },
             None => false
         }
+    }
+
+    pub fn date(&self) -> Date {
+        self.date.clone().unwrap()
     }
 }
 
@@ -209,8 +213,8 @@ impl SavedTrack {
             artist: track.artist.name.to_string(),
             album: track.album.text.to_string(),
             loved: track.loved(),
-            datetime_local: track.date.datetime_local(),
-            timestamp_utc: track.date.time_stamp(),
+            datetime_local: track.date().datetime_local(),
+            timestamp_utc: track.date().time_stamp(),
         }
     }
 
