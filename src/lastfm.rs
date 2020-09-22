@@ -92,7 +92,15 @@ pub async fn fetch_tracks(
         })
         .await;
 
-    Ok(tracks.into_inner().unwrap())
+    bar.finish();
+
+    // Remove "now playing" track, if one exists
+    let mut tracks = tracks.into_inner().unwrap();
+    if tracks.iter().any(|t| t.now_playing()) {
+        tracks.retain(|t| !t.now_playing())
+    }
+
+    Ok(tracks)
 }
 
 pub async fn fetch_tracks_metadata(
