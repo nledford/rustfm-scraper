@@ -94,9 +94,10 @@ impl Attr {
     }
 }
 
-// TODO add field when listening to track
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
 pub struct Track {
+    #[serde(rename = "@attr")]
+    pub attr: Option<TrackAttr>,
     pub artist: Artist,
     pub album: Album,
     // Skip `image`
@@ -125,6 +126,25 @@ impl Track {
             true
         }
     }
+
+    pub fn now_playing(&self) -> bool {
+        match &self.attr {
+            Some(attr) => {
+                if attr.now_playing == "true" {
+                    true
+                } else {
+                    false
+                }
+            },
+            None => false
+        }
+    }
+}
+
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
+pub struct TrackAttr {
+    #[serde(rename = "nowplaying")]
+    now_playing: String
 }
 
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
