@@ -3,9 +3,9 @@ use std::{env, io, process};
 use anyhow::Result;
 use clap::Clap;
 
+use rustfm::{files, lastfm, utils};
 use rustfm::app::{Opts, SubCommand};
 use rustfm::config::Config;
-use rustfm::{files, lastfm, utils};
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -72,11 +72,8 @@ async fn main() -> Result<()> {
                 None => utils::get_current_unix_timestamp(),
             };
 
-            let mut tracks =
+            let tracks =
                 lastfm::fetch_tracks(&user, &config.api_key, page, limit, from, to).await?;
-
-            tracks.sort_unstable_by_key(|t| t.date().time_stamp());
-            tracks.reverse();
 
             println!("\nTotal Tracks: {}", &tracks.len());
 

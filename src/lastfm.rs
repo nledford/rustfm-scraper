@@ -1,10 +1,11 @@
-use std::sync::Mutex;
+use std::process;
 
 use anyhow::Result;
 use futures::prelude::*;
 use indicatif::ProgressBar;
 
-use crate::models::{Attr, RecentTracksResponse, Track, User, UserResponse};
+use crate::models::{Attr, RecentTracksResponse, User, UserResponse};
+use crate::types::{CollectedTracks, Tracks};
 
 fn build_request_url(
     user: &User,
@@ -42,7 +43,7 @@ pub async fn fetch_tracks(
     limit: i32,
     from: i64,
     to: i64,
-) -> Result<Vec<Track>> {
+) -> Result<Tracks> {
     println!("\nFetching metadata...");
     let metadata = fetch_tracks_metadata(user, api_key, page, limit, from, to).await?;
 
@@ -63,42 +64,53 @@ pub async fn fetch_tracks(
 
     println!("\nFetching tracks...");
 
-    let tracks: Mutex<Vec<Track>> = Mutex::new(Vec::new());
     let urls: Vec<String> = (1..=metadata.total_pages())
         .map(|p| build_request_url(user, api_key, p, limit, from, to))
         .collect();
 
     let bar = ProgressBar::new(metadata.total_pages() as u64);
-    let responses = stream::iter(urls)
+    let mut tracks = stream::iter(urls)
         .map(|url| {
             let client = reqwest::Client::new();
             bar.inc(1);
             tokio::spawn(async move {
-                let rtr: RecentTracksResponse =
-                    client.get(&url).send().await.unwrap().json().await.unwrap();
-                rtr.recent_tracks.tracks
+                let resp = match client.get(&url).send().await {
+                    Ok(resp) => resp,
+                    Err(err) => {
+                        eprintln!("Error occurred on url: {}\nError: {}", &url, err);
+                        process::exit(0)
+                    }
+                };
+
+                let recent_tracks = match resp.json::<RecentTracksResponse>().await {
+                    Ok(rtr) => rtr.recent_tracks.tracks,
+                    Err(err) => {
+                        eprintln!("Error parsing json on url: {}\nError: {}", &url, err);
+                        process::exit(0)
+                    }
+                };
+
+                recent_tracks
             })
         })
-        .buffer_unordered(12);
-
-    responses
-        .for_each(|t| async {
-            let mut recent_tracks = t.unwrap();
-            let mut db = tracks
-                .lock()
-                .map_err(|_| "Failed to acquire MutexGuard")
-                .unwrap();
-            db.append(&mut recent_tracks);
-        })
-        .await;
+        .buffer_unordered(50)
+        .map(|t| t.unwrap())
+        .collect::<CollectedTracks>()
+        .await
+        .into_iter()
+        .flatten()
+        .collect::<Tracks>();
 
     bar.finish();
 
-    // Remove "now playing" track, if one exists
-    let mut tracks = tracks.into_inner().unwrap();
+    println!("Removing `Now Playing` track, if one exists...");
     if tracks.iter().any(|t| t.now_playing()) {
         tracks.retain(|t| !t.now_playing())
     }
+
+    println!("Sorting tracks in descending order by timestamp...");
+    tracks.sort_unstable_by_key(|t| t.date().time_stamp());
+    tracks.reverse();
 
     Ok(tracks)
 }
