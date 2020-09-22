@@ -120,23 +120,13 @@ impl Track {
     }
 
     pub fn loved(&self) -> bool {
-        if self.loved == "0" {
-            false
-        } else {
-            true
-        }
+        self.loved == "1"
     }
 
     pub fn now_playing(&self) -> bool {
         match &self.attr {
-            Some(attr) => {
-                if attr.now_playing == "true" {
-                    true
-                } else {
-                    false
-                }
-            },
-            None => false
+            Some(attr) => attr.now_playing == "true",
+            None => false,
         }
     }
 
@@ -148,7 +138,7 @@ impl Track {
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
 pub struct TrackAttr {
     #[serde(rename = "nowplaying")]
-    now_playing: String
+    now_playing: String,
 }
 
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
@@ -181,10 +171,7 @@ impl Date {
     }
 
     pub fn datetime_utc(&self) -> DateTime<Utc> {
-        let dt =
-            DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(self.time_stamp(), 0), Utc);
-
-        dt
+        DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(self.time_stamp(), 0), Utc)
     }
 
     pub fn datetime_local(&self) -> DateTime<Local> {
