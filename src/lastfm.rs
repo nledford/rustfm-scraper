@@ -1,4 +1,4 @@
-use std::process;
+use std::{process, time};
 
 use anyhow::Result;
 use futures::prelude::*;
@@ -6,6 +6,8 @@ use indicatif::ProgressBar;
 
 use crate::models::{Attr, RecentTracksResponse, User, UserResponse};
 use crate::types::{CollectedTracks, Tracks};
+
+const PARALLEL_REQUESTS: usize = 50;
 
 fn build_request_url(
     user: &User,
@@ -71,9 +73,12 @@ pub async fn fetch_tracks(
     let bar = ProgressBar::new(metadata.total_pages() as u64);
     let mut tracks = stream::iter(urls)
         .map(|url| {
-            let client = reqwest::Client::new();
-            bar.inc(1);
-            tokio::spawn(async move {
+            let client = reqwest::Client::builder()
+                .timeout(time::Duration::from_secs(60))
+                .build()
+                .unwrap();
+
+            let task = tokio::spawn(async move {
                 let resp = match client.get(&url).send().await {
                     Ok(resp) => resp,
                     Err(err) => {
@@ -90,10 +95,15 @@ pub async fn fetch_tracks(
                     }
                 };
 
+
                 recent_tracks
-            })
+            });
+
+            bar.inc(1);
+
+            task
         })
-        .buffer_unordered(50)
+        .buffer_unordered(PARALLEL_REQUESTS)
         .map(|t| t.unwrap())
         .collect::<CollectedTracks>()
         .await
