@@ -1,4 +1,4 @@
-rustfm-scaper
+rustfm-scraper
 =============
 
 
