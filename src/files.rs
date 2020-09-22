@@ -2,9 +2,9 @@ use std::env;
 
 use crate::models::{SavedTrack, Track};
 
-pub fn save_to_csv(tracks: Vec<Track>) {
+pub fn save_to_csv(tracks: Vec<Track>, username: &str) {
     let current_dir = env::current_dir().unwrap();
-    let file = current_dir.join("tracks.csv");
+    let file = current_dir.join(format!("{}.csv", username));
 
     let tracks: Vec<SavedTrack> = tracks.iter().map(|t| SavedTrack::from_track(t)).collect();
 

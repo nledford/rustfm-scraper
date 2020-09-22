@@ -81,7 +81,7 @@ async fn main() -> Result<()> {
             println!("\nTotal Tracks: {}", &tracks.len());
 
             println!("Test writing to CSV file...");
-            files::save_to_csv(tracks);
+            files::save_to_csv(tracks, &user.name);
 
             println!("\nDone!");
         }
