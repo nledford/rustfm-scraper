@@ -7,6 +7,7 @@ repository = "https://github.com/nledford/rustfm-scraper"
 keywords = ["last.fm", "lastfm", "last-fm", "api"]
 license = "MIT"
 categories = ["api-bindings", "multimedia"]
+readme = "README.md"
 edition = "2018"
 
 [dependencies]
