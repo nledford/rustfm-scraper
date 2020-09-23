@@ -1,3 +1,5 @@
+//! Custom types used throughout the application
+
 use crate::models::Track;
 
 /// A collection of [Track](../models/struct.Track.html)s.
