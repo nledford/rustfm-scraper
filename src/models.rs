@@ -1,19 +1,20 @@
 use chrono::prelude::*;
+use serde::{Deserialize, Serialize};
 
 use crate::types::Tracks;
 
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Deserialize)]
 pub struct UserResponse {
     pub user: User,
 }
 
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Deserialize)]
 pub struct Registered {
     pub unixtime: String,
 }
 
 /// Response to a `user.getInfo` request
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Deserialize)]
 pub struct User {
     playlists: String,
     #[serde(rename = "playcount")]
@@ -44,13 +45,13 @@ impl User {
 
 // ############################################################################
 
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Deserialize)]
 pub struct RecentTracksResponse {
     #[serde(rename = "recenttracks")]
     pub recent_tracks: RecentTracks,
 }
 
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Deserialize)]
 pub struct RecentTracks {
     #[serde(rename = "@attr")]
     pub attr: Attr,
@@ -58,7 +59,7 @@ pub struct RecentTracks {
     pub tracks: Tracks,
 }
 
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Deserialize)]
 pub struct Attr {
     page: String,
     #[serde(rename = "perPage")]
@@ -99,7 +100,7 @@ impl Attr {
     }
 }
 
-#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct Track {
     #[serde(rename = "@attr")]
     pub attr: Option<TrackAttr>,
@@ -140,27 +141,27 @@ impl Track {
     }
 }
 
-#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct TrackAttr {
     #[serde(rename = "nowplaying")]
     now_playing: String,
 }
 
-#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct Artist {
     pub url: String,
     pub mbid: String,
     pub name: String,
 }
 
-#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct Album {
     pub mbid: String,
     #[serde(rename = "#text")]
     pub text: String,
 }
 
-#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct Date {
     uts: String,
     #[serde(rename = "#text")]
@@ -188,7 +189,8 @@ impl Date {
 
 // ############################################################################
 
-#[derive(serde::Serialize, serde::Deserialize)]
+/// Represents the data that is saved to a file from a given [Track](struct.Track.html)
+#[derive(Serialize, Deserialize)]
 pub struct SavedTrack {
     pub title: String,
     pub artist: String,
