@@ -16,7 +16,8 @@ pub struct Registered {
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
 pub struct User {
     playlists: String,
-    playcount: String,
+    #[serde(rename = "playcount")]
+    play_count: String,
     pub gender: String,
     pub name: String,
     pub subscriber: String,
@@ -27,7 +28,8 @@ pub struct User {
     pub user_type: String,
     pub age: String,
     pub bootstrap: String,
-    pub realname: String,
+    #[serde(rename = "realname")]
+    pub real_name: String,
 }
 
 impl User {
@@ -36,7 +38,7 @@ impl User {
     }
 
     pub fn play_count(&self) -> i32 {
-        self.playcount.parse().unwrap()
+        self.play_count.parse().unwrap()
     }
 }
 
