@@ -12,6 +12,7 @@ pub struct Registered {
     pub unixtime: String,
 }
 
+/// Response to a `user.getInfo` request
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
 pub struct User {
     playlists: String,
