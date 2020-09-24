@@ -1,9 +1,9 @@
 use std::{process, time};
 
 use anyhow::Result;
+use async_recursion::async_recursion;
 use futures::prelude::*;
 use indicatif::ProgressBar;
-use async_recursion::async_recursion;
 
 use crate::models::{Attr, RecentTracksResponse, User, UserResponse};
 use crate::types::{CollectedTracks, Tracks};
@@ -79,9 +79,7 @@ pub async fn fetch_tracks(
                 .build()
                 .unwrap();
 
-            let task = tokio::spawn(async move {
-                fetch_page(&url, &client).await
-            });
+            let task = tokio::spawn(async move { fetch_page(&url, &client).await });
 
             bar.inc(1);
 
@@ -113,16 +111,12 @@ pub async fn fetch_tracks(
 pub async fn fetch_page(url: &str, client: &reqwest::Client) -> Tracks {
     let resp = match client.get(url).send().await {
         Ok(resp) => resp,
-        Err(_) => {
-            return fetch_page(url, client).await
-        }
+        Err(_) => return fetch_page(url, client).await,
     };
 
     let recent_tracks = match resp.json::<RecentTracksResponse>().await {
         Ok(rtr) => rtr.recent_tracks.tracks,
-        Err(_) => {
-            return fetch_page(url, client).await
-        }
+        Err(_) => return fetch_page(url, client).await,
     };
 
     recent_tracks
