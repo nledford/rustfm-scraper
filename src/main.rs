@@ -3,10 +3,10 @@ use std::{env, io, process};
 use anyhow::Result;
 use clap::Clap;
 
-use rustfm_scraper::{files, lastfm, utils};
 use rustfm_scraper::app::Opts;
 use rustfm_scraper::app::SubCommand;
 use rustfm_scraper::config::Config;
+use rustfm_scraper::{files, lastfm, utils};
 
 #[tokio::main]
 async fn main() -> Result<()> {

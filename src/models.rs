@@ -245,13 +245,15 @@ impl SavedTrack {
     }
 
     pub fn combined(&self) -> String {
-        format!("{} - {} - {} - {} - {} - {}",
-                self.title,
-                self.artist,
-                self.album,
-                self.loved,
-                self.datetime_local,
-                self.timestamp_utc)
+        format!(
+            "{} - {} - {} - {} - {} - {}",
+            self.title,
+            self.artist,
+            self.album,
+            self.loved,
+            self.datetime_local,
+            self.timestamp_utc
+        )
     }
 
     pub fn calculate_hash(&self) -> u64 {
