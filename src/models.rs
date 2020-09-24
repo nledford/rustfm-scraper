@@ -3,8 +3,6 @@
 use chrono::prelude::*;
 use serde::{Deserialize, Serialize};
 
-use crate::types::Tracks;
-
 #[derive(Debug, Deserialize)]
 pub struct UserResponse {
     pub user: User,
@@ -85,7 +83,7 @@ pub struct RecentTracks {
     #[serde(rename = "@attr")]
     pub attr: Attr,
     #[serde(rename = "track")]
-    pub tracks: Tracks,
+    pub tracks: Vec<Track>,
 }
 
 #[derive(Debug, Deserialize)]

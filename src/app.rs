@@ -13,6 +13,8 @@ pub enum SubCommand {
     Fetch(Fetch),
 }
 
+// TODO add config subcommand and allow a default file location to be set
+
 /// A subcommand for fetching your listening history from Last.fm
 #[derive(Clap)]
 pub struct Fetch {
@@ -30,4 +32,7 @@ pub struct Fetch {
     /// End timestamp of a range - only display scrobbles before this time, in UNIX timestamp format
     #[clap(short)]
     pub to: Option<i64>,
+    /// Append new tracks to an existing file
+    #[clap(short)]
+    pub append: Option<bool>,
 }

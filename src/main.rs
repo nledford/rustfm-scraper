@@ -39,6 +39,25 @@ async fn main() -> Result<()> {
             println!("Username: {}", user.name);
             println!("Number of scrobbles: {}", user.play_count());
 
+            let mut append_tracks = false;
+            let mut saved_tracks = match f.append {
+                Some(append) => {
+                    if append {
+                        append_tracks = true;
+                        println!("Loading existing tracks from the local hard drive...");
+                        files::load_from_csv(&user.name)
+                    } else {
+                        Vec::new()
+                    }
+                }
+                None => Vec::new()
+            };
+
+            let min_timestamp = match saved_tracks.get(0) {
+                Some(track) => track.timestamp_utc,
+                None => 0
+            };
+
             let page = match f.page {
                 Some(page) => {
                     if page <= 0 {
@@ -73,13 +92,17 @@ async fn main() -> Result<()> {
                 None => utils::get_current_unix_timestamp(),
             };
 
-            let tracks =
-                lastfm::fetch_tracks(&user, &config.api_key, page, limit, from, to).await?;
+            if append_tracks {
+                let new_tracks = lastfm::fetch_tracks(&user, &config.api_key, page, limit, min_timestamp, to).await?;
 
-            println!("\nTotal Tracks: {}", &tracks.len());
+                println!("Saving {} new tracks to existing file...", &new_tracks.len());
+                files::append_to_csv(new_tracks, &mut saved_tracks, &user.name);
+            } else {
+                let tracks = lastfm::fetch_tracks(&user, &config.api_key, page, limit, from, to).await?;
 
-            println!("Test writing to CSV file...");
-            files::save_to_csv(tracks, &user.name);
+                println!("Saving {} tracks to file...", &tracks.len());
+                files::save_to_csv(tracks, &user.name);
+            }
 
             println!("\nDone!");
         }
