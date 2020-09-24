@@ -33,6 +33,6 @@ pub struct Fetch {
     #[clap(short)]
     pub to: Option<i64>,
     /// Append new tracks to an existing file
-    #[clap(short)]
-    pub append: Option<bool>,
+    #[clap(short, takes_value = false)]
+    pub append: bool,
 }

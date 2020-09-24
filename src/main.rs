@@ -3,10 +3,10 @@ use std::{env, io, process};
 use anyhow::Result;
 use clap::Clap;
 
+use rustfm_scraper::{files, lastfm, utils};
 use rustfm_scraper::app::Opts;
 use rustfm_scraper::app::SubCommand;
 use rustfm_scraper::config::Config;
-use rustfm_scraper::{files, lastfm, utils};
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -40,17 +40,12 @@ async fn main() -> Result<()> {
             println!("Number of scrobbles: {}", user.play_count());
 
             let mut append_tracks = false;
-            let mut saved_tracks = match f.append {
-                Some(append) => {
-                    if append {
-                        append_tracks = true;
-                        println!("Loading existing tracks from the local hard drive...");
-                        files::load_from_csv(&user.name)
-                    } else {
-                        Vec::new()
-                    }
-                }
-                None => Vec::new(),
+            let mut saved_tracks = if f.append {
+                append_tracks = true;
+                println!("Loading existing tracks from the local hard drive...");
+                files::load_from_csv(&user.name)
+            } else {
+                Vec::new()
             };
 
             let min_timestamp = match saved_tracks.get(0) {
