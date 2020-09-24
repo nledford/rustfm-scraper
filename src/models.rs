@@ -2,6 +2,7 @@
 
 use chrono::prelude::*;
 use serde::{Deserialize, Serialize};
+use std::collections::hash_map::DefaultHasher;
 
 #[derive(Debug, Deserialize)]
 pub struct UserResponse {
@@ -217,7 +218,7 @@ impl Date {
 // ############################################################################
 
 /// Represents the data that is saved to a file from a given [Track](struct.Track.html)
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Hash)]
 pub struct SavedTrack {
     pub title: String,
     pub artist: String,
@@ -241,5 +242,23 @@ impl SavedTrack {
 
     pub fn combined_title(&self) -> String {
         format!("{} - {} - {}", self.title, self.artist, self.album)
+    }
+
+    pub fn combined(&self) -> String {
+        format!("{} - {} - {} - {} - {} - {}",
+                self.title,
+                self.artist,
+                self.album,
+                self.loved,
+                self.datetime_local,
+                self.timestamp_utc)
+    }
+
+    pub fn calculate_hash(&self) -> u64 {
+        use std::hash::{Hash, Hasher};
+
+        let mut s = DefaultHasher::new();
+        self.hash(&mut s);
+        s.finish()
     }
 }

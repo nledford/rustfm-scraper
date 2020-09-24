@@ -5,6 +5,7 @@ use crate::types::{AllSavedTracks, AllTracks};
 
 fn sort_saved_tracks(saved_tracks: &mut AllSavedTracks) {
     saved_tracks.sort_unstable_by_key(|t| t.timestamp_utc);
+    saved_tracks.dedup_by_key(|t| t.calculate_hash());
     saved_tracks.reverse();
 }
 
