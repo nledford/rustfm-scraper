@@ -50,12 +50,12 @@ async fn main() -> Result<()> {
                         Vec::new()
                     }
                 }
-                None => Vec::new()
+                None => Vec::new(),
             };
 
             let min_timestamp = match saved_tracks.get(0) {
                 Some(track) => track.timestamp_utc,
-                None => 0
+                None => 0,
             };
 
             let page = match f.page {
@@ -93,12 +93,18 @@ async fn main() -> Result<()> {
             };
 
             if append_tracks {
-                let new_tracks = lastfm::fetch_tracks(&user, &config.api_key, page, limit, min_timestamp, to).await?;
+                let new_tracks =
+                    lastfm::fetch_tracks(&user, &config.api_key, page, limit, min_timestamp, to)
+                        .await?;
 
-                println!("Saving {} new tracks to existing file...", &new_tracks.len());
+                println!(
+                    "Saving {} new tracks to existing file...",
+                    &new_tracks.len()
+                );
                 files::append_to_csv(new_tracks, &mut saved_tracks, &user.name);
             } else {
-                let tracks = lastfm::fetch_tracks(&user, &config.api_key, page, limit, from, to).await?;
+                let tracks =
+                    lastfm::fetch_tracks(&user, &config.api_key, page, limit, from, to).await?;
 
                 println!("Saving {} tracks to file...", &tracks.len());
                 files::save_to_csv(tracks, &user.name);

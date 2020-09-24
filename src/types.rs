@@ -9,7 +9,6 @@ use crate::models::{SavedTrack, Track};
 // /// A unflattened collection of track pages from the Last.fm API.
 // pub type CollectedTracks = Vec<Tracks>;
 
-
 pub type Page = Vec<Track>;
 pub type AllPages = Vec<Page>;
 pub type AllTracks = Vec<Track>;

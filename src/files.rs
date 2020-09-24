@@ -18,7 +18,8 @@ pub fn save_to_csv(tracks: AllTracks, username: &str) {
 }
 
 pub fn append_to_csv(tracks: AllTracks, saved_tracks: &mut AllSavedTracks, username: &str) {
-    let current_dir = env::current_dir().expect("Error fetching current directory from environment");
+    let current_dir =
+        env::current_dir().expect("Error fetching current directory from environment");
     let file = current_dir.join(format!("{}.csv", username));
 
     let mut new_tracks: AllSavedTracks = tracks.iter().map(|t| SavedTrack::from_track(t)).collect();
@@ -34,13 +35,16 @@ pub fn append_to_csv(tracks: AllTracks, saved_tracks: &mut AllSavedTracks, usern
 }
 
 pub fn load_from_csv(username: &str) -> AllSavedTracks {
-    let current_dir = env::current_dir().expect("Error fetching current directory from environment");
+    let current_dir =
+        env::current_dir().expect("Error fetching current directory from environment");
     let file = current_dir.join(format!("{}.csv", username));
 
     let mut rdr = csv::Reader::from_path(file).expect("Error creating csv reader");
 
-    rdr.deserialize().map(|result| {
-        let saved_track: SavedTrack = result.expect("Error deserializing csv record");
-        saved_track
-    }).collect::<AllSavedTracks>()
+    rdr.deserialize()
+        .map(|result| {
+            let saved_track: SavedTrack = result.expect("Error deserializing csv record");
+            saved_track
+        })
+        .collect::<AllSavedTracks>()
 }
