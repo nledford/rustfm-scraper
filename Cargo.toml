@@ -14,7 +14,7 @@ edition = "2018"
 anyhow = "1.0.32"
 async-recursion = "0.3.1"
 chrono = { version = "0.4.15", features = [ "serde" ] }
-clap = "3.0.0-beta.2"
+clap = { version = "3.0.0-beta.2", features = [ "unstable" ] }
 crossbeam = "0.7.3"
 csv = "1.1.3"
 dirs = "3.0.1"
