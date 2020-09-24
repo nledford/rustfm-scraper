@@ -4,14 +4,15 @@ version = "0.1.0" #:version
 authors = [ "Nathaniel Ledford <nate@nateledford.com>" ]
 description = "Scrapes listening history from Last.fm and stores it in a file"
 repository = "https://github.com/nledford/rustfm-scraper"
-keywords = ["lastfm", "last-fm", "api"]
+keywords = [ "lastfm", "last-fm", "api" ]
 license = "MIT"
-categories = ["api-bindings", "multimedia"]
+categories = [ "api-bindings", "multimedia" ]
 readme = "README.md"
 edition = "2018"
 
 [dependencies]
 anyhow = "1.0.32"
+async-recursion = "0.3.1"
 chrono = { version = "0.4.15", features = [ "serde" ] }
 clap = "3.0.0-beta.2"
 crossbeam = "0.7.3"

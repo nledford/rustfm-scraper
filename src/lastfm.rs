@@ -3,6 +3,7 @@ use std::{process, time};
 use anyhow::Result;
 use futures::prelude::*;
 use indicatif::ProgressBar;
+use async_recursion::async_recursion;
 
 use crate::models::{Attr, RecentTracksResponse, User, UserResponse};
 use crate::types::{CollectedTracks, Tracks};
@@ -79,23 +80,7 @@ pub async fn fetch_tracks(
                 .unwrap();
 
             let task = tokio::spawn(async move {
-                let resp = match client.get(&url).send().await {
-                    Ok(resp) => resp,
-                    Err(err) => {
-                        eprintln!("Error occurred on url: {}\nError: {}", &url, err);
-                        process::exit(0)
-                    }
-                };
-
-                let recent_tracks = match resp.json::<RecentTracksResponse>().await {
-                    Ok(rtr) => rtr.recent_tracks.tracks,
-                    Err(err) => {
-                        eprintln!("Error parsing json on url: {}\nError: {}", &url, err);
-                        process::exit(0)
-                    }
-                };
-
-                recent_tracks
+                fetch_page(&url, &client).await
             });
 
             bar.inc(1);
@@ -122,6 +107,25 @@ pub async fn fetch_tracks(
     tracks.reverse();
 
     Ok(tracks)
+}
+
+#[async_recursion]
+pub async fn fetch_page(url: &str, client: &reqwest::Client) -> Tracks {
+    let resp = match client.get(url).send().await {
+        Ok(resp) => resp,
+        Err(_) => {
+            return fetch_page(url, client).await
+        }
+    };
+
+    let recent_tracks = match resp.json::<RecentTracksResponse>().await {
+        Ok(rtr) => rtr.recent_tracks.tracks,
+        Err(_) => {
+            return fetch_page(url, client).await
+        }
+    };
+
+    recent_tracks
 }
 
 pub async fn fetch_tracks_metadata(
