@@ -100,10 +100,6 @@ pub async fn fetch_tracks(
         tracks.retain(|t| !t.now_playing())
     }
 
-    println!("Sorting tracks in descending order by timestamp...");
-    tracks.sort_unstable_by_key(|t| t.date().time_stamp());
-    tracks.reverse();
-
     Ok(tracks)
 }
 

@@ -3,11 +3,17 @@ use std::env;
 use crate::models::SavedTrack;
 use crate::types::{AllSavedTracks, AllTracks};
 
+fn sort_saved_tracks(saved_tracks: &mut AllSavedTracks) {
+    saved_tracks.sort_unstable_by_key(|t| t.timestamp_utc);
+    saved_tracks.reverse();
+}
+
 pub fn save_to_csv(tracks: AllTracks, username: &str) {
     let current_dir = env::current_dir().unwrap();
     let file = current_dir.join(format!("{}.csv", username));
 
-    let tracks: AllSavedTracks = tracks.iter().map(|t| SavedTrack::from_track(t)).collect();
+    let mut tracks: AllSavedTracks = tracks.iter().map(|t| SavedTrack::from_track(t)).collect();
+    sort_saved_tracks(&mut tracks);
 
     let mut wtr = csv::Writer::from_path(file).unwrap();
 
@@ -24,8 +30,7 @@ pub fn append_to_csv(tracks: AllTracks, saved_tracks: &mut AllSavedTracks, usern
 
     let mut new_tracks: AllSavedTracks = tracks.iter().map(|t| SavedTrack::from_track(t)).collect();
     saved_tracks.append(&mut new_tracks);
-    saved_tracks.sort_unstable_by_key(|t| t.timestamp_utc);
-    saved_tracks.reverse();
+    sort_saved_tracks(saved_tracks);
 
     let mut wtr = csv::Writer::from_path(file).expect("Error creating csv writer");
     for track in saved_tracks {
