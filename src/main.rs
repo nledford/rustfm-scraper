@@ -32,9 +32,10 @@ async fn main() -> Result<()> {
 
     match opts.subcmd {
         SubCommand::Fetch(f) => {
+            println!("Fetching user profile `{}`...", &f.username);
             let user = lastfm::fetch_profile(&f.username, &config.api_key).await?;
 
-            println!("Username: {}", user.name);
+            println!("\nUsername: {}", user.name);
             println!("Number of scrobbles: {}", user.play_count());
 
             let mut append_tracks = false;
