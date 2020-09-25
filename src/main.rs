@@ -26,8 +26,6 @@ async fn main() -> Result<()> {
 
         let config = Config::new(api_key);
         config.save_config()?;
-
-        process::exit(0);
     }
 
     let config = Config::load_config()?;
