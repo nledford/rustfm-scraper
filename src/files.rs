@@ -11,7 +11,8 @@ fn sort_saved_tracks(saved_tracks: &mut AllSavedTracks) {
 }
 
 fn build_csv_path(username: &str) -> PathBuf {
-    let current_dir = env::current_dir().expect("Error fetching current directory from environment");
+    let current_dir =
+        env::current_dir().expect("Error fetching current directory from environment");
     current_dir.join(format!("{}.csv", username))
 }
 
