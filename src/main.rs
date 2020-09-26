@@ -23,8 +23,13 @@ async fn main() -> Result<()> {
 
     match opts.subcmd {
         SubCommand::Fetch(f) => {
-            println!("Fetching user profile `{}`...", &f.username);
-            let user = lastfm::fetch_profile(&f.username, &config.api_key).await?;
+            let username = match f.username {
+                Some(username) => username,
+                None => config.default_username
+            };
+
+            println!("Fetching user profile `{}`...", &username);
+            let user = lastfm::fetch_profile(&username, &config.api_key).await?;
 
             println!("\nUsername: {}", user.name);
             println!("Number of scrobbles: {}", user.play_count());

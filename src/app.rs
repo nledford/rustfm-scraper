@@ -18,8 +18,9 @@ pub enum SubCommand {
 /// A subcommand for fetching your listening history from Last.fm
 #[derive(Clap)]
 pub struct Fetch {
-    /// Your Last.fm username
-    pub username: String,
+    /// A Last.fm username
+    #[clap(short)]
+    pub username: Option<String>,
     /// The page number to fetch. Defaults to first page.
     #[clap(short)]
     pub page: Option<i32>,
