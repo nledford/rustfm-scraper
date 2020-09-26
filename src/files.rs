@@ -1,4 +1,5 @@
 use std::env;
+use std::path::PathBuf;
 
 use crate::models::SavedTrack;
 use crate::types::{AllSavedTracks, AllTracks};
@@ -9,9 +10,19 @@ fn sort_saved_tracks(saved_tracks: &mut AllSavedTracks) {
     saved_tracks.reverse();
 }
 
+fn build_csv_path(username: &str) -> PathBuf {
+    let current_dir = env::current_dir().expect("Error fetching current directory from environment");
+    current_dir.join(format!("{}.csv", username))
+}
+
+pub fn check_if_csv_exists(username: &str) -> bool {
+    let file = build_csv_path(username);
+
+    file.exists()
+}
+
 pub fn save_to_csv(tracks: AllTracks, username: &str) {
-    let current_dir = env::current_dir().unwrap();
-    let file = current_dir.join(format!("{}.csv", username));
+    let file = build_csv_path(username);
 
     let mut tracks: AllSavedTracks = tracks.iter().map(|t| SavedTrack::from_track(t)).collect();
     sort_saved_tracks(&mut tracks);
@@ -25,9 +36,7 @@ pub fn save_to_csv(tracks: AllTracks, username: &str) {
 }
 
 pub fn append_to_csv(tracks: AllTracks, saved_tracks: &mut AllSavedTracks, username: &str) {
-    let current_dir =
-        env::current_dir().expect("Error fetching current directory from environment");
-    let file = current_dir.join(format!("{}.csv", username));
+    let file = build_csv_path(username);
 
     let mut new_tracks: AllSavedTracks = tracks.iter().map(|t| SavedTrack::from_track(t)).collect();
     saved_tracks.append(&mut new_tracks);
@@ -41,9 +50,7 @@ pub fn append_to_csv(tracks: AllTracks, saved_tracks: &mut AllSavedTracks, usern
 }
 
 pub fn load_from_csv(username: &str) -> AllSavedTracks {
-    let current_dir =
-        env::current_dir().expect("Error fetching current directory from environment");
-    let file = current_dir.join(format!("{}.csv", username));
+    let file = build_csv_path(username);
 
     let mut rdr = csv::Reader::from_path(file).expect("Error creating csv reader");
 

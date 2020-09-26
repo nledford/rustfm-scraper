@@ -42,12 +42,14 @@ async fn fetch(f: Fetch, config: Config) -> Result<()> {
     println!("\nUsername: {}", user.name);
     println!("Number of scrobbles: {}", user.play_count());
 
-    let mut append_tracks = false;
-    let mut saved_tracks = if f.append {
-        append_tracks = true;
-        println!("Loading existing tracks from the local hard drive...");
+    let mut append_tracks = true;
+    let csv_file_exists = files::check_if_csv_exists(&user.name);
+
+    let mut saved_tracks = if csv_file_exists && !f.new_file {
+        println!("Loading existing files from hard drive...");
         files::load_from_csv(&user.name)
     } else {
+        append_tracks = false;
         Vec::new()
     };
 

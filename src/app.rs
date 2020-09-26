@@ -33,7 +33,10 @@ pub struct Fetch {
     /// End timestamp of a range - only display scrobbles before this time, in UNIX timestamp format
     #[clap(short)]
     pub to: Option<i64>,
-    /// Append new tracks to an existing file
-    #[clap(short, takes_value = false)]
-    pub append: bool,
+    /// Create new file, rather than append tracks to an existing file
+    #[clap(short = 'n', takes_value = false)]
+    pub new_file: bool,
+    // /// Append new tracks to an existing file
+    // #[clap(short, takes_value = false)]
+    // pub append: bool,
 }
