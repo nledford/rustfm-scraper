@@ -5,6 +5,8 @@ use std::path::{Path, PathBuf};
 
 use anyhow::Result;
 
+static CRATE_NAME: &'static str = env!("CARGO_CRATE_NAME");
+
 pub fn initialize_config() -> Result<()> {
     println!("Config file does not exist. Creating one now...");
 
@@ -85,7 +87,7 @@ fn build_config_path() -> PathBuf {
     let config_dir = dirs::config_dir().unwrap();
 
     let path = Path::new(config_dir.as_path());
-    let path = path.join("rustfm");
+    let path = path.join(CRATE_NAME);
 
     fs::create_dir_all(&path).expect("Path could not be created");
 
