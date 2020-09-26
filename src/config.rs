@@ -23,7 +23,7 @@ fn set_api_key() -> String {
         .read_line(&mut api_key)
         .expect("Failed to read api key");
 
-    api_key
+    api_key.trim().to_string()
 }
 
 fn set_username() -> String {
@@ -34,7 +34,7 @@ fn set_username() -> String {
         .read_line(&mut username)
         .expect("Failed to read username");
 
-    username
+    username.trim().to_string()
 }
 
 pub fn check_if_config_exists() -> bool {
