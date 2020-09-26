@@ -1,8 +1,9 @@
 //! Represents data retrieved from the Last.fm API and stored locally in files
 
+use std::collections::hash_map::DefaultHasher;
+
 use chrono::prelude::*;
 use serde::{Deserialize, Serialize};
-use std::collections::hash_map::DefaultHasher;
 
 #[derive(Debug, Deserialize)]
 pub struct UserResponse {
@@ -238,6 +239,14 @@ impl SavedTrack {
             datetime_local: track.date().datetime_local(),
             timestamp_utc: track.date().time_stamp(),
         }
+    }
+
+    pub fn date(&self) -> NaiveDate {
+        self.datetime_local.naive_local().date()
+    }
+
+    pub fn time(&self) -> NaiveTime {
+        self.datetime_local.naive_local().time()
     }
 
     pub fn combined_title(&self) -> String {
