@@ -219,7 +219,7 @@ impl Date {
 // ############################################################################
 
 /// Represents the data that is saved to a file from a given [Track](struct.Track.html)
-#[derive(Serialize, Deserialize, Hash)]
+#[derive(Serialize, Deserialize, Clone, Hash)]
 pub struct SavedTrack {
     pub title: String,
     pub artist: String,

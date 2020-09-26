@@ -23,5 +23,6 @@ pub mod config;
 pub mod files;
 pub mod lastfm;
 pub mod models;
+pub mod stats;
 pub mod types;
 pub mod utils;

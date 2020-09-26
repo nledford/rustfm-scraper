@@ -11,6 +11,7 @@ pub struct Opts {
 #[derive(Clap)]
 pub enum SubCommand {
     Fetch(Fetch),
+    Stats(Stats),
 }
 
 // TODO add config subcommand and allow a default file location to be set
@@ -39,4 +40,12 @@ pub struct Fetch {
     // /// Append new tracks to an existing file
     // #[clap(short, takes_value = false)]
     // pub append: bool,
+}
+
+/// A subcommand for calculating stats from a saved file
+#[derive(Clap)]
+pub struct Stats {
+    /// A Last.fm username
+    #[clap(short)]
+    pub username: Option<String>,
 }
