@@ -30,7 +30,9 @@ fn set_api_key() -> String {
 
 fn set_username() -> String {
     println!("Enter your Last.fm username:");
-    println!("(You can retrieve the listening history for a different Last.fm user with the `-u` flag.)");
+    println!(
+        "(You can retrieve the listening history for a different Last.fm user with the `-u` flag.)"
+    );
     let mut username = String::new();
     io::stdin()
         .read_line(&mut username)
