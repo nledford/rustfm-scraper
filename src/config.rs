@@ -5,7 +5,7 @@ use std::path::{Path, PathBuf};
 
 use anyhow::Result;
 
-static CRATE_NAME: &'static str = env!("CARGO_CRATE_NAME");
+static CRATE_NAME: &str = env!("CARGO_CRATE_NAME");
 
 pub fn initialize_config() -> Result<()> {
     println!("Config file does not exist. Creating one now...");
