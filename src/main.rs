@@ -1,9 +1,9 @@
-use std::{env, io};
+use std::env;
 
 use anyhow::Result;
 use clap::Clap;
 
-use rustfm_scraper::{files, lastfm, utils};
+use rustfm_scraper::{config, files, lastfm, utils};
 use rustfm_scraper::app::Opts;
 use rustfm_scraper::app::SubCommand;
 use rustfm_scraper::config::Config;
@@ -15,17 +15,8 @@ async fn main() -> Result<()> {
 
     // First check if a config file has been created
     // If not, prompt the user to create one
-    if !Config::check_if_config_exists() {
-        println!("Config file does not exist. Creating one now...");
-
-        println!("Enter your Last.fm API key: ");
-        let mut api_key = String::new();
-        io::stdin()
-            .read_line(&mut api_key)
-            .expect("Failed to read api key");
-
-        let config = Config::new(api_key);
-        config.save_config()?;
+    if !config::check_if_config_exists() {
+        config::initialize_config()?;
     }
 
     let config = Config::load_config()?;
