@@ -5,7 +5,7 @@ use std::collections::hash_map::DefaultHasher;
 use chrono::prelude::*;
 use serde::{Deserialize, Serialize};
 
-use crate::types::AllSavedScrobbles;
+use crate::types::{AllSavedScrobbles, AllTracks};
 
 #[derive(Debug, Deserialize)]
 pub struct UserResponse {
@@ -219,6 +219,38 @@ impl Date {
 }
 
 // ############################################################################
+
+pub struct SavedScrobbles {
+    saved_scrobbles: Vec<SavedScrobble>
+}
+
+impl SavedScrobbles {
+    pub fn new(scrobbles: AllTracks) -> Self {
+        let mut saved_scrobbles: Self =  Self {
+            saved_scrobbles: SavedScrobbles::from_scrobbles(scrobbles)
+        };
+        saved_scrobbles.sort();
+        saved_scrobbles
+    }
+
+    pub fn append_new_scrobbles(&mut self, new_scrobbles: AllTracks) {
+        let mut new_saved_scrobbles = SavedScrobbles::from_scrobbles(new_scrobbles);
+        self.saved_scrobbles.append(&mut new_saved_scrobbles);
+        self.sort()
+    }
+
+    fn sort(&mut self) {
+        self.saved_scrobbles.sort_unstable_by_key(|s| s.timestamp_utc);
+        self.saved_scrobbles.dedup_by_key(|s| s.calculate_hash());
+        self.saved_scrobbles.reverse();
+    }
+
+    fn from_scrobbles(scrobbles: AllTracks) -> Vec<SavedScrobble> {
+        scrobbles.iter()
+            .map(|scrobble| SavedScrobble::from_scrobble(scrobble))
+            .collect::<AllSavedScrobbles>()
+    }
+}
 
 /// Represents the data that is saved to a file from a given [Track](struct.Track.html)
 #[derive(Serialize, Deserialize, Clone, Hash)]
