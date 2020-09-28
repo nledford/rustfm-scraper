@@ -6,10 +6,10 @@ use anyhow::Result;
 use crate::models::{SavedScrobble, Track};
 use crate::types::AllSavedScrobbles;
 
-fn sort_saved_tracks(saved_tracks: &mut AllSavedScrobbles) {
-    saved_tracks.sort_unstable_by_key(|t| t.timestamp_utc);
-    saved_tracks.dedup_by_key(|t| t.calculate_hash());
-    saved_tracks.reverse();
+fn sort_saved_scrobbles(saved_scrobbles: &mut AllSavedScrobbles) {
+    saved_scrobbles.sort_unstable_by_key(|s| s.timestamp_utc);
+    saved_scrobbles.dedup_by_key(|s| s.calculate_hash());
+    saved_scrobbles.reverse();
 }
 
 fn build_csv_path(username: &str) -> PathBuf {
@@ -28,7 +28,7 @@ pub fn save_to_csv(scrobbles: &[Track], username: &str) -> Result<i32> {
     let file = build_csv_path(username);
 
     let mut scrobbles = SavedScrobble::from_scrobbles(scrobbles);
-    sort_saved_tracks(&mut scrobbles);
+    sort_saved_scrobbles(&mut scrobbles);
 
     let mut wtr = csv::Writer::from_path(file).unwrap();
 
@@ -42,19 +42,19 @@ pub fn save_to_csv(scrobbles: &[Track], username: &str) -> Result<i32> {
 
 pub fn append_to_csv(
     scrobbles: &[Track],
-    saved_tracks: &mut AllSavedScrobbles,
+    saved_scrobbles: &mut AllSavedScrobbles,
     username: &str,
 ) -> Result<i32> {
     let file = build_csv_path(username);
 
     let mut new_tracks = SavedScrobble::from_scrobbles(scrobbles);
-    saved_tracks.append(&mut new_tracks);
-    sort_saved_tracks(saved_tracks);
+    saved_scrobbles.append(&mut new_tracks);
+    sort_saved_scrobbles(saved_scrobbles);
 
-    let new_total_scrobbles = saved_tracks.len() as i32;
+    let new_total_scrobbles = saved_scrobbles.len() as i32;
 
     let mut wtr = csv::Writer::from_path(file).expect("Error creating csv writer");
-    for scrobble in saved_tracks {
+    for scrobble in saved_scrobbles {
         wtr.serialize(scrobble).expect("Error serializing scrobble");
     }
     wtr.flush().expect("Error flushing csv writer");
@@ -69,16 +69,16 @@ pub fn load_from_csv(username: &str) -> AllSavedScrobbles {
 
     let mut rdr = csv::Reader::from_path(file).expect("Error creating csv reader");
 
-    let mut saved_tracks = rdr
+    let mut saved_scrobbles = rdr
         .deserialize::<SavedScrobble>()
         .map(|result| result.expect("Error deserializing csv record"))
         .collect::<AllSavedScrobbles>();
-    sort_saved_tracks(&mut saved_tracks);
+    sort_saved_scrobbles(&mut saved_scrobbles);
 
     println!(
         "{} saved scrobbles retrieved from file\n",
-        &saved_tracks.len()
+        &saved_scrobbles.len()
     );
 
-    saved_tracks
+    saved_scrobbles
 }
