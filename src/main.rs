@@ -51,10 +51,6 @@ async fn fetch(f: Fetch, config: Config) -> Result<()> {
         (false, Vec::new())
     };
 
-    if !saved_tracks.is_empty() {
-        println!("{} saved scrobbles retrieved from file", &saved_tracks.len());
-    }
-
     let page = match f.page {
         Some(page) => {
             if page <= 0 {
@@ -149,6 +145,7 @@ fn stats(s: app::Stats, config: Config) -> Result<()> {
 
     let tracks = files::load_from_csv(&username);
 
+    println!("Crunching stats for {}...\n", &username);
     let stats = stats::Stats::new(tracks);
     stats.print();
 
