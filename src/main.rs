@@ -59,7 +59,7 @@ async fn fetch(f: Fetch, config: Config) -> Result<()> {
     } else {
         match saved_tracks.get(0) {
             Some(track) => track.timestamp_utc + 10,
-            None => 0
+            None => 0,
         }
     };
 
