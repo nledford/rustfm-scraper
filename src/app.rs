@@ -37,9 +37,6 @@ pub struct Fetch {
     /// Create new file, rather than append tracks to an existing file
     #[clap(short = 'n', takes_value = false)]
     pub new_file: bool,
-    // /// Append new tracks to an existing file
-    // #[clap(short, takes_value = false)]
-    // pub append: bool,
 }
 
 /// A subcommand for calculating stats from a saved file
