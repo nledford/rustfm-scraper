@@ -10,6 +10,8 @@ pub struct Stats {
     average_tracks_per_week: f64,
     average_tracks_per_month: f64,
     average_tracks_per_year: f64,
+
+    best_month: (String, i32),
 }
 
 impl Stats {
@@ -19,6 +21,8 @@ impl Stats {
             average_tracks_per_week: calculate_weekly_average(&tracks),
             average_tracks_per_month: calculate_monthly_average(&tracks),
             average_tracks_per_year: calculate_yearly_average(&tracks),
+
+            best_month: calculate_best_month(&tracks),
         }
     }
 
@@ -29,6 +33,8 @@ impl Stats {
         println!("Average Tracks Per Week:  {}", self.average_tracks_per_week);
         println!("Average Tracks Per Month: {}", self.average_tracks_per_month);
         println!("Average Tracks Per Year:  {}", self.average_tracks_per_year);
+
+        println!("Best Month: {} ({} scrobbles)", self.best_month.0, self.best_month.1);
     }
 }
 
@@ -74,4 +80,21 @@ fn calculate_yearly_average(tracks: &AllSavedTracks) -> f64 {
     });
 
     groups.iter().map(|g| g.1).sum::<i32>() as f64 / utils::get_total_years(&tracks) as f64
+}
+
+fn calculate_best_month(tracks: &AllSavedTracks) -> (String, i32) {
+    let mut groups: HashMap<String, i32> = HashMap::new();
+
+    tracks.into_iter().for_each(|track| {
+        let group = groups.entry(track.year_month()).or_insert(0);
+        *group = *group + 1
+    });
+
+    let mut group_vec = groups.iter().collect::<Vec<(&String, &i32)>>();
+    group_vec.sort_by(|a,b| a.1.cmp(b.1));
+    group_vec.reverse();
+
+    let best_month = group_vec.get(0).expect("Error retrieving best month");
+
+    (best_month.0.to_string(), *best_month.1)
 }
