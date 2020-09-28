@@ -66,10 +66,9 @@ pub fn load_from_csv(username: &str) -> AllSavedScrobbles {
     let mut rdr = csv::Reader::from_path(file).expect("Error creating csv reader");
 
     let mut saved_tracks = rdr
-        .deserialize()
+        .deserialize::<SavedScrobble>()
         .map(|result| {
-            let saved_track: SavedScrobble = result.expect("Error deserializing csv record");
-            saved_track
+            result.expect("Error deserializing csv record")
         })
         .collect::<AllSavedScrobbles>();
     sort_saved_tracks(&mut saved_tracks);
