@@ -37,6 +37,9 @@ pub struct Fetch {
     /// Create new file, rather than append tracks to an existing file
     #[clap(short = 'n', takes_value = false)]
     pub new_file: bool,
+    /// Fetches all new tracks from beginning of current day, rather than since last saved track
+    #[clap(long, takes_value = false)]
+    pub current_day: bool,
 }
 
 /// A subcommand for calculating stats from a saved file

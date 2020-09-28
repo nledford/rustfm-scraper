@@ -52,9 +52,15 @@ async fn fetch(f: Fetch, config: Config) -> Result<()> {
         (false, Vec::new())
     };
 
-    let min_timestamp = match saved_tracks.get(0) {
-        Some(track) => track.timestamp_utc + 10,
-        None => 0,
+    let min_timestamp = if f.current_day {
+        use chrono::prelude::*;
+
+        Utc::now().date().and_hms(0, 0, 0).timestamp()
+    } else {
+        match saved_tracks.get(0) {
+            Some(track) => track.timestamp_utc + 10,
+            None => 0
+        }
     };
 
     let page = match f.page {
