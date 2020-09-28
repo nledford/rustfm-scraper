@@ -100,7 +100,7 @@ async fn fetch(f: Fetch, config: Config) -> Result<()> {
         None => utils::get_current_unix_timestamp(),
     };
 
-    if append_tracks {
+    let new_total = if append_tracks {
         let new_tracks =
             lastfm::fetch_tracks(&user, &config.api_key, page, limit, min_timestamp, to).await?;
 
@@ -109,12 +109,18 @@ async fn fetch(f: Fetch, config: Config) -> Result<()> {
             &new_tracks.len()
         );
         files::append_to_csv(new_tracks, &mut saved_tracks, &user.name);
+
+        new_tracks.len() + saved_tracks.len()
     } else {
         let tracks = lastfm::fetch_tracks(&user, &config.api_key, page, limit, from, to).await?;
 
         println!("Saving {} tracks to file...", &tracks.len());
         files::save_to_csv(tracks, &user.name);
-    }
+
+        tracks.len()
+    };
+
+    println!("{} scrobbles saved. ({} expected)", new_total, user.play_count());
 
     Ok(())
 }
