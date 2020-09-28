@@ -1,8 +1,10 @@
 use std::env;
 use std::path::PathBuf;
 
+use anyhow::Result;
+
 use crate::models::{SavedTrack, Track};
-use crate::types::{AllSavedTracks};
+use crate::types::AllSavedTracks;
 
 fn sort_saved_tracks(saved_tracks: &mut AllSavedTracks) {
     saved_tracks.sort_unstable_by_key(|t| t.timestamp_utc);
@@ -22,7 +24,7 @@ pub fn check_if_csv_exists(username: &str) -> bool {
     file.exists()
 }
 
-pub fn save_to_csv(tracks: &[Track], username: &str) {
+pub fn save_to_csv(tracks: &[Track], username: &str) -> Result<i32> {
     let file = build_csv_path(username);
 
     let mut tracks: AllSavedTracks = tracks.iter().map(|t| SavedTrack::from_track(t)).collect();
@@ -30,24 +32,30 @@ pub fn save_to_csv(tracks: &[Track], username: &str) {
 
     let mut wtr = csv::Writer::from_path(file).unwrap();
 
-    for track in tracks {
+    for track in &tracks {
         wtr.serialize(track).unwrap();
     }
     wtr.flush().unwrap();
+
+    Ok(tracks.len() as i32)
 }
 
-pub fn append_to_csv(tracks: &[Track], saved_tracks: &mut AllSavedTracks, username: &str) {
+pub fn append_to_csv(tracks: &[Track], saved_tracks: &mut AllSavedTracks, username: &str) -> Result<i32> {
     let file = build_csv_path(username);
 
     let mut new_tracks: AllSavedTracks = tracks.iter().map(|t| SavedTrack::from_track(t)).collect();
     saved_tracks.append(&mut new_tracks);
     sort_saved_tracks(saved_tracks);
 
+    let new_total_scrobbles = *&saved_tracks.len() as i32;
+
     let mut wtr = csv::Writer::from_path(file).expect("Error creating csv writer");
     for track in saved_tracks {
         wtr.serialize(track).expect("Error serializing track");
     }
     wtr.flush().expect("Error flushing csv writer");
+
+    Ok(new_total_scrobbles)
 }
 
 pub fn load_from_csv(username: &str) -> AllSavedTracks {

@@ -108,19 +108,21 @@ async fn fetch(f: Fetch, config: Config) -> Result<()> {
             "Saving {} new tracks to existing file...",
             &new_tracks.len()
         );
-        files::append_to_csv(&new_tracks, &mut saved_tracks, &user.name);
+        files::append_to_csv(&new_tracks, &mut saved_tracks, &user.name)?
 
-        new_tracks.len() + saved_tracks.len()
     } else {
         let tracks = lastfm::fetch_tracks(&user, &config.api_key, page, limit, from, to).await?;
 
         println!("Saving {} tracks to file...", &tracks.len());
-        files::save_to_csv(&tracks, &user.name);
-
-        tracks.len()
+        files::save_to_csv(&tracks, &user.name)?
     };
 
-    println!("{} scrobbles saved. ({} expected)", new_total, user.play_count());
+    if new_total != user.play_count() {
+        println!("{} scrobbles were saved to the file, when {} scrobbles were expected.", new_total, user.play_count());
+        println!("Please consider creating a new file with the new file flag. `-n`");
+    } else {
+        println!("{} scrobbles saved.", new_total);
+    }
 
     Ok(())
 }
