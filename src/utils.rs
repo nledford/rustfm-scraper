@@ -21,7 +21,7 @@ pub fn get_total_days(scrobbles: &[SavedScrobble]) -> i64 {
 }
 
 pub fn get_total_weeks(scrobbles: &[SavedScrobble]) -> f64 {
-    get_total_days(scrobbles) as f64 / (365 / 7) as f64
+    get_total_days(scrobbles) as f64 / (365 / 52) as f64
 }
 
 pub fn get_total_months(scrobbles: &[SavedScrobble]) -> f64 {
