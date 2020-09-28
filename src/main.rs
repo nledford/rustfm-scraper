@@ -3,10 +3,10 @@ use std::env;
 use anyhow::Result;
 use clap::Clap;
 
-use rustfm_scraper::{app, config, files, lastfm, stats, utils};
-use rustfm_scraper::app::{Fetch, Opts};
 use rustfm_scraper::app::SubCommand;
+use rustfm_scraper::app::{Fetch, Opts};
 use rustfm_scraper::config::Config;
+use rustfm_scraper::{app, config, files, lastfm, stats, utils};
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -103,7 +103,7 @@ async fn fetch(f: Fetch, config: Config) -> Result<()> {
 
     if new_tracks.is_empty() {
         println!("No new tracks were retrieved from Last.fm");
-        return Ok(())
+        return Ok(());
     }
 
     let new_total = if append_tracks {
@@ -112,14 +112,17 @@ async fn fetch(f: Fetch, config: Config) -> Result<()> {
             &new_tracks.len()
         );
         files::append_to_csv(&new_tracks, &mut saved_tracks, &user.name)?
-
     } else {
         println!("Saving {} tracks to file...", &new_tracks.len());
         files::save_to_csv(&new_tracks, &user.name)?
     };
 
     if new_total != user.play_count() {
-        println!("{} scrobbles were saved to the file, when {} scrobbles were expected.", new_total, user.play_count());
+        println!(
+            "{} scrobbles were saved to the file, when {} scrobbles were expected.",
+            new_total,
+            user.play_count()
+        );
         println!("Please consider creating a new file with the new file flag. `-n`");
     } else {
         println!("{} scrobbles saved.", new_total);

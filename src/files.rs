@@ -40,7 +40,11 @@ pub fn save_to_csv(scrobbles: &[Track], username: &str) -> Result<i32> {
     Ok(scrobbles.len() as i32)
 }
 
-pub fn append_to_csv(scrobbles: &[Track], saved_tracks: &mut AllSavedScrobbles, username: &str) -> Result<i32> {
+pub fn append_to_csv(
+    scrobbles: &[Track],
+    saved_tracks: &mut AllSavedScrobbles,
+    username: &str,
+) -> Result<i32> {
     let file = build_csv_path(username);
 
     let mut new_tracks = SavedScrobble::from_scrobbles(scrobbles);
@@ -67,13 +71,14 @@ pub fn load_from_csv(username: &str) -> AllSavedScrobbles {
 
     let mut saved_tracks = rdr
         .deserialize::<SavedScrobble>()
-        .map(|result| {
-            result.expect("Error deserializing csv record")
-        })
+        .map(|result| result.expect("Error deserializing csv record"))
         .collect::<AllSavedScrobbles>();
     sort_saved_tracks(&mut saved_tracks);
 
-    println!("{} saved scrobbles retrieved from file\n", &saved_tracks.len());
+    println!(
+        "{} saved scrobbles retrieved from file\n",
+        &saved_tracks.len()
+    );
 
     saved_tracks
 }
