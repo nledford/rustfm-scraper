@@ -1,8 +1,8 @@
 use std::env;
 use std::path::PathBuf;
 
-use crate::models::SavedTrack;
-use crate::types::{AllSavedTracks, AllTracks};
+use crate::models::{SavedTrack, Track};
+use crate::types::{AllSavedTracks};
 
 fn sort_saved_tracks(saved_tracks: &mut AllSavedTracks) {
     saved_tracks.sort_unstable_by_key(|t| t.timestamp_utc);
@@ -22,7 +22,7 @@ pub fn check_if_csv_exists(username: &str) -> bool {
     file.exists()
 }
 
-pub fn save_to_csv(tracks: AllTracks, username: &str) {
+pub fn save_to_csv(tracks: &[Track], username: &str) {
     let file = build_csv_path(username);
 
     let mut tracks: AllSavedTracks = tracks.iter().map(|t| SavedTrack::from_track(t)).collect();
@@ -36,7 +36,7 @@ pub fn save_to_csv(tracks: AllTracks, username: &str) {
     wtr.flush().unwrap();
 }
 
-pub fn append_to_csv(tracks: AllTracks, saved_tracks: &mut AllSavedTracks, username: &str) {
+pub fn append_to_csv(tracks: &[Track], saved_tracks: &mut AllSavedTracks, username: &str) {
     let file = build_csv_path(username);
 
     let mut new_tracks: AllSavedTracks = tracks.iter().map(|t| SavedTrack::from_track(t)).collect();
