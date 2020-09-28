@@ -3,10 +3,10 @@ use std::env;
 use anyhow::Result;
 use clap::Clap;
 
+use rustfm_scraper::{app, config, files, lastfm, stats, utils};
 use rustfm_scraper::app::{Fetch, Opts};
-use rustfm_scraper::app::{Stats, SubCommand};
+use rustfm_scraper::app::SubCommand;
 use rustfm_scraper::config::Config;
-use rustfm_scraper::{config, files, lastfm, stats, utils};
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -116,7 +116,7 @@ async fn fetch(f: Fetch, config: Config) -> Result<()> {
     Ok(())
 }
 
-fn stats(s: Stats, config: Config) -> Result<()> {
+fn stats(s: app::Stats, config: Config) -> Result<()> {
     let username = match s.username {
         Some(username) => username,
         None => config.default_username,
