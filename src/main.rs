@@ -78,7 +78,7 @@ async fn fetch(f: Fetch, config: Config) -> Result<()> {
                 limit
             }
         }
-        None => 50,
+        None => 200,
     };
 
     let from = match f.from {
