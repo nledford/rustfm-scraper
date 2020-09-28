@@ -51,6 +51,8 @@ pub fn append_to_csv(tracks: AllTracks, saved_tracks: &mut AllSavedTracks, usern
 }
 
 pub fn load_from_csv(username: &str) -> AllSavedTracks {
+    println!("Loading saved tracks from `{}.csv`...", username);
+
     let file = build_csv_path(username);
 
     let mut rdr = csv::Reader::from_path(file).expect("Error creating csv reader");

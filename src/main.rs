@@ -40,17 +40,20 @@ async fn fetch(f: Fetch, config: Config) -> Result<()> {
     println!("Fetching user profile `{}`...", &username);
     let user = lastfm::fetch_profile(&username, &config.api_key).await?;
 
-    println!("\nUsername: {}", user.name);
+    println!("Username: {}", user.name);
     println!("Number of scrobbles: {}", user.play_count());
 
     let (append_tracks, mut saved_tracks) = if files::check_if_csv_exists(&user.name) && !f.new_file
     {
-        println!("Loading existing files from hard drive...");
         (true, files::load_from_csv(&user.name))
     } else {
         println!("Creating new file...");
         (false, Vec::new())
     };
+
+    if !saved_tracks.is_empty() {
+        println!("{} saved scrobbles retrieved from file", &saved_tracks.len());
+    }
 
     let min_timestamp = if f.current_day {
         use chrono::prelude::*;
