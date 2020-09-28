@@ -253,6 +253,14 @@ impl SavedTrack {
         self.date().format("%B-%Y").to_string()
     }
 
+    pub fn song_artist(&self) -> String {
+        format!("{} - {}", self.title, self.artist)
+    }
+
+    pub fn artist_album(&self) -> String {
+        format!("{} - {}", self.artist, self.album)
+    }
+
     pub fn combined_title(&self) -> String {
         format!("{} - {} - {}", self.title, self.artist, self.album)
     }
