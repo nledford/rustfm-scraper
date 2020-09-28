@@ -27,7 +27,7 @@ pub fn check_if_csv_exists(username: &str) -> bool {
 pub fn save_to_csv(scrobbles: &[Track], username: &str) -> Result<i32> {
     let file = build_csv_path(username);
 
-    let mut scrobbles: AllSavedScrobbles = scrobbles.iter().map(|t| SavedScrobble::from_scrobble(t)).collect();
+    let mut scrobbles = SavedScrobble::from_scrobbles(scrobbles);
     sort_saved_tracks(&mut scrobbles);
 
     let mut wtr = csv::Writer::from_path(file).unwrap();
@@ -43,7 +43,7 @@ pub fn save_to_csv(scrobbles: &[Track], username: &str) -> Result<i32> {
 pub fn append_to_csv(scrobbles: &[Track], saved_tracks: &mut AllSavedScrobbles, username: &str) -> Result<i32> {
     let file = build_csv_path(username);
 
-    let mut new_tracks: AllSavedScrobbles = scrobbles.iter().map(|t| SavedScrobble::from_scrobble(t)).collect();
+    let mut new_tracks = SavedScrobble::from_scrobbles(scrobbles);
     saved_tracks.append(&mut new_tracks);
     sort_saved_tracks(saved_tracks);
 

@@ -5,7 +5,7 @@ use std::collections::hash_map::DefaultHasher;
 use chrono::prelude::*;
 use serde::{Deserialize, Serialize};
 
-use crate::types::{AllSavedScrobbles, AllTracks};
+use crate::types::AllSavedScrobbles;
 
 #[derive(Debug, Deserialize)]
 pub struct UserResponse {
@@ -243,7 +243,7 @@ impl SavedScrobble {
         }
     }
 
-    pub fn from_scrobbles(scrobbles: AllTracks) -> AllSavedScrobbles {
+    pub fn from_scrobbles(scrobbles: &[Track]) -> AllSavedScrobbles {
         scrobbles
             .iter()
             .map(|scrobble| SavedScrobble::from_scrobble(scrobble))
