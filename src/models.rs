@@ -249,8 +249,8 @@ impl SavedTrack {
         self.datetime_local.naive_local().time()
     }
 
-    pub fn year_month(&self) -> String {
-        self.date().format("%Y-%B").to_string()
+    pub fn month_year(&self) -> String {
+        self.date().format("%B-%Y").to_string()
     }
 
     pub fn combined_title(&self) -> String {

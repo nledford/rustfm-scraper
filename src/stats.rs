@@ -86,7 +86,7 @@ fn calculate_best_month(tracks: &AllSavedTracks) -> (String, i32) {
     let mut groups: HashMap<String, i32> = HashMap::new();
 
     tracks.into_iter().for_each(|track| {
-        let group = groups.entry(track.year_month()).or_insert(0);
+        let group = groups.entry(track.month_year()).or_insert(0);
         *group = *group + 1
     });
 
