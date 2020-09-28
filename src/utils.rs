@@ -20,6 +20,14 @@ pub fn get_total_days(tracks: &AllSavedTracks) -> i64 {
     get_duration(tracks).num_days()
 }
 
-pub fn get_total_weeks(tracks: &AllSavedTracks) -> i64 {
-    get_duration(tracks).num_weeks()
+pub fn get_total_weeks(tracks: &AllSavedTracks) -> f64 {
+    get_total_days(tracks) as f64 / (365 / 7) as f64
+}
+
+pub fn get_total_months(tracks: &AllSavedTracks) -> f64 {
+    get_total_days(tracks) as f64 / (365 / 12) as f64
+}
+
+pub fn get_total_years(tracks: &AllSavedTracks) -> f64 {
+    get_total_days(&tracks) as f64 / 365 as f64
 }
