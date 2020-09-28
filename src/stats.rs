@@ -31,10 +31,16 @@ impl Stats {
 
         println!("Average Tracks Per Day:   {}", self.average_tracks_per_day);
         println!("Average Tracks Per Week:  {}", self.average_tracks_per_week);
-        println!("Average Tracks Per Month: {}", self.average_tracks_per_month);
+        println!(
+            "Average Tracks Per Month: {}",
+            self.average_tracks_per_month
+        );
         println!("Average Tracks Per Year:  {}", self.average_tracks_per_year);
 
-        println!("Best Month: {} ({} scrobbles)", self.best_month.0, self.best_month.1);
+        println!(
+            "Best Month: {} ({} scrobbles)",
+            self.best_month.0, self.best_month.1
+        );
     }
 }
 
@@ -91,7 +97,7 @@ fn calculate_best_month(tracks: &AllSavedTracks) -> (String, i32) {
     });
 
     let mut group_vec = groups.iter().collect::<Vec<(&String, &i32)>>();
-    group_vec.sort_by(|a,b| a.1.cmp(b.1));
+    group_vec.sort_by(|a, b| a.1.cmp(b.1));
     group_vec.reverse();
 
     let best_month = group_vec.get(0).expect("Error retrieving best month");

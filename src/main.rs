@@ -3,10 +3,10 @@ use std::env;
 use anyhow::Result;
 use clap::Clap;
 
-use rustfm_scraper::{config, files, lastfm, stats, utils};
-use rustfm_scraper::app::{Stats, SubCommand};
 use rustfm_scraper::app::{Fetch, Opts};
+use rustfm_scraper::app::{Stats, SubCommand};
 use rustfm_scraper::config::Config;
+use rustfm_scraper::{config, files, lastfm, stats, utils};
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -113,13 +113,16 @@ async fn fetch(f: Fetch, config: Config) -> Result<()> {
 fn stats(s: Stats, config: Config) -> Result<()> {
     let username = match s.username {
         Some(username) => username,
-        None => config.default_username
+        None => config.default_username,
     };
 
     let file_exists = files::check_if_csv_exists(&username);
     if !file_exists {
-        println!("No file for `{}` exists. Stats cannot be calculated.", &username);
-        return Ok(())
+        println!(
+            "No file for `{}` exists. Stats cannot be calculated.",
+            &username
+        );
+        return Ok(());
     }
 
     let tracks = files::load_from_csv(&username);
