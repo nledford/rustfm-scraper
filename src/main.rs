@@ -55,17 +55,6 @@ async fn fetch(f: Fetch, config: Config) -> Result<()> {
         println!("{} saved scrobbles retrieved from file", &saved_tracks.len());
     }
 
-    let min_timestamp = if f.current_day {
-        use chrono::prelude::*;
-
-        Utc::now().date().and_hms(0, 0, 0).timestamp()
-    } else {
-        match saved_tracks.get(0) {
-            Some(track) => track.timestamp_utc + 10,
-            None => 0,
-        }
-    };
-
     let page = match f.page {
         Some(page) => {
             if page <= 0 {
@@ -100,10 +89,28 @@ async fn fetch(f: Fetch, config: Config) -> Result<()> {
         None => utils::get_current_unix_timestamp(),
     };
 
-    let new_total = if append_tracks {
-        let new_tracks =
-            lastfm::fetch_tracks(&user, &config.api_key, page, limit, min_timestamp, to).await?;
+    let min_timestamp = if f.current_day {
+        use chrono::prelude::*;
 
+        Utc::now().date().and_hms(0, 0, 0).timestamp()
+    } else if append_tracks {
+        match saved_tracks.get(0) {
+            Some(track) => track.timestamp_utc + 10,
+            None => 0,
+        }
+    } else {
+        from
+    };
+
+    let new_tracks =
+        lastfm::fetch_tracks(&user, &config.api_key, page, limit, min_timestamp, to).await?;
+
+    if new_tracks.is_empty() {
+        println!("No new tracks were retrieved from Last.fm");
+        return Ok(())
+    }
+
+    let new_total = if append_tracks {
         println!(
             "Saving {} new tracks to existing file...",
             &new_tracks.len()
@@ -111,10 +118,8 @@ async fn fetch(f: Fetch, config: Config) -> Result<()> {
         files::append_to_csv(&new_tracks, &mut saved_tracks, &user.name)?
 
     } else {
-        let tracks = lastfm::fetch_tracks(&user, &config.api_key, page, limit, from, to).await?;
-
-        println!("Saving {} tracks to file...", &tracks.len());
-        files::save_to_csv(&tracks, &user.name)?
+        println!("Saving {} tracks to file...", &new_tracks.len());
+        files::save_to_csv(&new_tracks, &user.name)?
     };
 
     if new_total != user.play_count() {
