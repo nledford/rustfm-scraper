@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 use chrono::{Datelike, NaiveDate};
 
+use crate::models::SavedTrack;
 use crate::types::AllSavedTracks;
 use crate::utils;
 
@@ -44,7 +45,7 @@ impl Stats {
     }
 }
 
-fn calculate_daily_average(tracks: &AllSavedTracks) -> f64 {
+fn calculate_daily_average(tracks: &[SavedTrack]) -> f64 {
     let mut groups: HashMap<NaiveDate, i32> = HashMap::new();
 
     tracks.into_iter().for_each(|track| {
@@ -55,7 +56,7 @@ fn calculate_daily_average(tracks: &AllSavedTracks) -> f64 {
     groups.iter().map(|g| g.1).sum::<i32>() as f64 / utils::get_total_days(&tracks) as f64
 }
 
-fn calculate_weekly_average(tracks: &AllSavedTracks) -> f64 {
+fn calculate_weekly_average(tracks: &[SavedTrack]) -> f64 {
     let mut groups: HashMap<u32, i32> = HashMap::new();
 
     tracks.into_iter().for_each(|track| {
@@ -66,34 +67,34 @@ fn calculate_weekly_average(tracks: &AllSavedTracks) -> f64 {
     groups.iter().map(|g| g.1).sum::<i32>() as f64 / utils::get_total_weeks(&tracks) as f64
 }
 
-fn calculate_monthly_average(tracks: &AllSavedTracks) -> f64 {
+fn calculate_monthly_average(tracks: &[SavedTrack]) -> f64 {
     let mut groups: HashMap<u32, i32> = HashMap::new();
 
-    tracks.into_iter().for_each(|track| {
+    tracks.iter().for_each(|track| {
         let group = groups.entry(track.date().month()).or_insert(0);
-        *group = *group + 1;
+        *group += 1;
     });
 
     groups.iter().map(|g| g.1).sum::<i32>() as f64 / utils::get_total_months(&tracks) as f64
 }
 
-fn calculate_yearly_average(tracks: &AllSavedTracks) -> f64 {
+fn calculate_yearly_average(tracks: &[SavedTrack]) -> f64 {
     let mut groups: HashMap<i32, i32> = HashMap::new();
 
-    tracks.into_iter().for_each(|track| {
+    tracks.iter().for_each(|track| {
         let group = groups.entry(track.date().year()).or_insert(0);
-        *group = *group + 1
+        *group += 1
     });
 
     groups.iter().map(|g| g.1).sum::<i32>() as f64 / utils::get_total_years(&tracks) as f64
 }
 
-fn calculate_best_month(tracks: &AllSavedTracks) -> (String, i32) {
+fn calculate_best_month(tracks: &[SavedTrack]) -> (String, i32) {
     let mut groups: HashMap<String, i32> = HashMap::new();
 
     tracks.into_iter().for_each(|track| {
         let group = groups.entry(track.month_year()).or_insert(0);
-        *group = *group + 1
+        *group += 1
     });
 
     let mut group_vec = groups.iter().collect::<Vec<(&String, &i32)>>();
