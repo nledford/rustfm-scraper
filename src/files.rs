@@ -47,7 +47,7 @@ pub fn append_to_csv(tracks: &[Track], saved_tracks: &mut AllSavedTracks, userna
     saved_tracks.append(&mut new_tracks);
     sort_saved_tracks(saved_tracks);
 
-    let new_total_scrobbles = *&saved_tracks.len() as i32;
+    let new_total_scrobbles = saved_tracks.len() as i32;
 
     let mut wtr = csv::Writer::from_path(file).expect("Error creating csv writer");
     for track in saved_tracks {
