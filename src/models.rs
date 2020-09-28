@@ -5,6 +5,8 @@ use std::collections::hash_map::DefaultHasher;
 use chrono::prelude::*;
 use serde::{Deserialize, Serialize};
 
+use crate::types::{AllSavedScrobbles, AllTracks};
+
 #[derive(Debug, Deserialize)]
 pub struct UserResponse {
     pub user: User,
@@ -239,6 +241,13 @@ impl SavedScrobble {
             datetime_local: scrobble.date().datetime_local(),
             timestamp_utc: scrobble.date().time_stamp(),
         }
+    }
+
+    pub fn from_scrobbles(scrobbles: AllTracks) -> AllSavedScrobbles {
+        scrobbles
+            .iter()
+            .map(|scrobble| SavedScrobble::from_scrobble(scrobble))
+            .collect::<AllSavedScrobbles>()
     }
 
     pub fn date(&self) -> NaiveDate {
