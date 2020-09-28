@@ -2,8 +2,8 @@ use std::collections::HashMap;
 
 use chrono::{Datelike, NaiveDate};
 
-use crate::models::SavedTrack;
-use crate::types::AllSavedTracks;
+use crate::models::SavedScrobble;
+use crate::types::AllSavedScrobbles;
 use crate::utils;
 
 pub struct Stats {
@@ -16,14 +16,14 @@ pub struct Stats {
 }
 
 impl Stats {
-    pub fn new(tracks: AllSavedTracks) -> Self {
+    pub fn new(scrobbles: AllSavedScrobbles) -> Self {
         Self {
-            average_tracks_per_day: calculate_daily_average(&tracks),
-            average_tracks_per_week: calculate_weekly_average(&tracks),
-            average_tracks_per_month: calculate_monthly_average(&tracks),
-            average_tracks_per_year: calculate_yearly_average(&tracks),
+            average_tracks_per_day: calculate_daily_average(&scrobbles),
+            average_tracks_per_week: calculate_weekly_average(&scrobbles),
+            average_tracks_per_month: calculate_monthly_average(&scrobbles),
+            average_tracks_per_year: calculate_yearly_average(&scrobbles),
 
-            best_month: calculate_best_month(&tracks),
+            best_month: calculate_best_month(&scrobbles),
         }
     }
 
@@ -45,55 +45,55 @@ impl Stats {
     }
 }
 
-fn calculate_daily_average(tracks: &[SavedTrack]) -> f64 {
+fn calculate_daily_average(scrobbles: &[SavedScrobble]) -> f64 {
     let mut groups: HashMap<NaiveDate, i32> = HashMap::new();
 
-    tracks.iter().for_each(|track| {
-        let group = groups.entry(track.date()).or_insert(0);
+    scrobbles.iter().for_each(|scrobble| {
+        let group = groups.entry(scrobble.date()).or_insert(0);
         *group += 1
     });
 
-    groups.iter().map(|g| g.1).sum::<i32>() as f64 / utils::get_total_days(&tracks) as f64
+    groups.iter().map(|g| g.1).sum::<i32>() as f64 / utils::get_total_days(&scrobbles) as f64
 }
 
-fn calculate_weekly_average(tracks: &[SavedTrack]) -> f64 {
+fn calculate_weekly_average(scrobbles: &[SavedScrobble]) -> f64 {
     let mut groups: HashMap<u32, i32> = HashMap::new();
 
-    tracks.iter().for_each(|track| {
-        let group = groups.entry(track.date().iso_week().week()).or_insert(0);
+    scrobbles.iter().for_each(|scrobble| {
+        let group = groups.entry(scrobble.date().iso_week().week()).or_insert(0);
         *group += 1;
     });
 
-    groups.iter().map(|g| g.1).sum::<i32>() as f64 / utils::get_total_weeks(&tracks) as f64
+    groups.iter().map(|g| g.1).sum::<i32>() as f64 / utils::get_total_weeks(&scrobbles) as f64
 }
 
-fn calculate_monthly_average(tracks: &[SavedTrack]) -> f64 {
+fn calculate_monthly_average(scrobbles: &[SavedScrobble]) -> f64 {
     let mut groups: HashMap<u32, i32> = HashMap::new();
 
-    tracks.iter().for_each(|track| {
-        let group = groups.entry(track.date().month()).or_insert(0);
+    scrobbles.iter().for_each(|scrobble| {
+        let group = groups.entry(scrobble.date().month()).or_insert(0);
         *group += 1;
     });
 
-    groups.iter().map(|g| g.1).sum::<i32>() as f64 / utils::get_total_months(&tracks) as f64
+    groups.iter().map(|g| g.1).sum::<i32>() as f64 / utils::get_total_months(&scrobbles) as f64
 }
 
-fn calculate_yearly_average(tracks: &[SavedTrack]) -> f64 {
+fn calculate_yearly_average(scrobbles: &[SavedScrobble]) -> f64 {
     let mut groups: HashMap<i32, i32> = HashMap::new();
 
-    tracks.iter().for_each(|track| {
-        let group = groups.entry(track.date().year()).or_insert(0);
+    scrobbles.iter().for_each(|scrobble| {
+        let group = groups.entry(scrobble.date().year()).or_insert(0);
         *group += 1
     });
 
-    groups.iter().map(|g| g.1).sum::<i32>() as f64 / utils::get_total_years(&tracks) as f64
+    groups.iter().map(|g| g.1).sum::<i32>() as f64 / utils::get_total_years(&scrobbles) as f64
 }
 
-fn calculate_best_month(tracks: &[SavedTrack]) -> (String, i32) {
+fn calculate_best_month(scrobbles: &[SavedScrobble]) -> (String, i32) {
     let mut groups: HashMap<String, i32> = HashMap::new();
 
-    tracks.iter().for_each(|track| {
-        let group = groups.entry(track.month_year()).or_insert(0);
+    scrobbles.iter().for_each(|scrobble| {
+        let group = groups.entry(scrobble.month_year()).or_insert(0);
         *group += 1
     });
 

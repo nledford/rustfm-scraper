@@ -220,7 +220,7 @@ impl Date {
 
 /// Represents the data that is saved to a file from a given [Track](struct.Track.html)
 #[derive(Serialize, Deserialize, Clone, Hash)]
-pub struct SavedTrack {
+pub struct SavedScrobble {
     pub title: String,
     pub artist: String,
     pub album: String,
@@ -229,15 +229,15 @@ pub struct SavedTrack {
     pub timestamp_utc: i64,
 }
 
-impl SavedTrack {
-    pub fn from_track(track: &Track) -> Self {
+impl SavedScrobble {
+    pub fn from_scrobble(scrobble: &Track) -> Self {
         Self {
-            title: track.name.to_string(),
-            artist: track.artist.name.to_string(),
-            album: track.album.text.to_string(),
-            loved: track.loved(),
-            datetime_local: track.date().datetime_local(),
-            timestamp_utc: track.date().time_stamp(),
+            title: scrobble.name.to_string(),
+            artist: scrobble.artist.name.to_string(),
+            album: scrobble.album.text.to_string(),
+            loved: scrobble.loved(),
+            datetime_local: scrobble.date().datetime_local(),
+            timestamp_utc: scrobble.date().time_stamp(),
         }
     }
 
