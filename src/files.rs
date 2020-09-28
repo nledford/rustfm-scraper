@@ -59,7 +59,7 @@ pub fn append_to_csv(tracks: &[Track], saved_tracks: &mut AllSavedTracks, userna
 }
 
 pub fn load_from_csv(username: &str) -> AllSavedTracks {
-    println!("Loading saved tracks from `{}.csv`...", username);
+    println!("Loading saved scrobbles from `{}.csv`...", username);
 
     let file = build_csv_path(username);
 
@@ -73,6 +73,8 @@ pub fn load_from_csv(username: &str) -> AllSavedTracks {
         })
         .collect::<AllSavedTracks>();
     sort_saved_tracks(&mut saved_tracks);
+
+    println!("{} saved scrobbles retrieved from file\n", &saved_tracks.len());
 
     saved_tracks
 }
