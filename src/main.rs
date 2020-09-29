@@ -112,7 +112,7 @@ async fn fetch(f: Fetch, config: Config) -> Result<()> {
             "Saving {} new tracks to existing file...",
             &new_tracks.len()
         );
-        files::append_to_csv(new_tracks, &mut saved_tracks, &user.name)?
+        files::append_to_csv(&new_tracks, &mut saved_tracks, &user.name)?
     } else {
         println!("Saving {} tracks to file...", &new_tracks.len());
         files::save_to_csv(&new_tracks, &user.name)?

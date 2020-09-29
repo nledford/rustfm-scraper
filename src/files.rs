@@ -3,14 +3,7 @@ use std::path::PathBuf;
 
 use anyhow::Result;
 
-use crate::models::{SavedScrobble, SavedScrobbles, Track};
-use crate::types::{AllSavedScrobbles, AllTracks};
-
-fn sort_saved_scrobbles(saved_scrobbles: &mut AllSavedScrobbles) {
-    saved_scrobbles.sort_unstable_by_key(|s| s.timestamp_utc);
-    saved_scrobbles.dedup_by_key(|s| s.calculate_hash());
-    saved_scrobbles.reverse();
-}
+use crate::models::{SavedScrobbles, Track};
 
 fn build_csv_path(username: &str) -> PathBuf {
     let current_dir =
@@ -27,21 +20,17 @@ pub fn check_if_csv_exists(username: &str) -> bool {
 pub fn save_to_csv(scrobbles: &[Track], username: &str) -> Result<i32> {
     let file = build_csv_path(username);
 
-    let mut scrobbles = SavedScrobble::from_scrobbles(scrobbles);
-    sort_saved_scrobbles(&mut scrobbles);
+    let scrobbles = SavedScrobbles::from_scrobbles(scrobbles);
 
     let mut wtr = csv::Writer::from_path(file).unwrap();
-
-    for scrobble in &scrobbles {
-        wtr.serialize(scrobble).unwrap();
-    }
+    scrobbles.to_csv_writer(&mut wtr);
     wtr.flush().unwrap();
 
-    Ok(scrobbles.len() as i32)
+    Ok(scrobbles.total_saved_scrobbles())
 }
 
 pub fn append_to_csv(
-    scrobbles: AllTracks,
+    scrobbles: &[Track],
     saved_scrobbles: &mut SavedScrobbles,
     username: &str,
 ) -> Result<i32> {

@@ -8,7 +8,7 @@ use csv::{Reader, Writer};
 use serde::{Deserialize, Serialize};
 
 use crate::stats::Stats;
-use crate::types::{AllSavedScrobbles, AllTracks};
+use crate::types::AllSavedScrobbles;
 
 #[derive(Debug, Deserialize)]
 pub struct UserResponse {
@@ -242,7 +242,7 @@ impl SavedScrobbles {
         saved_scrobbles
     }
 
-    pub fn from_scrobbles(scrobbles: AllTracks) -> Self {
+    pub fn from_scrobbles(scrobbles: &[Track]) -> Self {
         let mut saved_scrobbles = Self {
             saved_scrobbles: SavedScrobbles::convert_scrobbles(scrobbles),
         };
@@ -266,7 +266,7 @@ impl SavedScrobbles {
         }
     }
 
-    pub fn append_new_scrobbles(&mut self, new_scrobbles: AllTracks) {
+    pub fn append_new_scrobbles(&mut self, new_scrobbles: &[Track]) {
         let mut new_saved_scrobbles = SavedScrobbles::convert_scrobbles(new_scrobbles);
         self.saved_scrobbles.append(&mut new_saved_scrobbles);
         self.sort()
@@ -291,7 +291,7 @@ impl SavedScrobbles {
         self.saved_scrobbles.reverse();
     }
 
-    fn convert_scrobbles(scrobbles: AllTracks) -> Vec<SavedScrobble> {
+    fn convert_scrobbles(scrobbles: &[Track]) -> Vec<SavedScrobble> {
         scrobbles
             .iter()
             .map(|scrobble| SavedScrobble::from_scrobble(scrobble))
