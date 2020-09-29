@@ -39,7 +39,7 @@ async fn fetch(f: Fetch, config: Config) -> Result<()> {
     };
 
     println!("Fetching user profile `{}`...", &username);
-    let user = lastfm::fetch_profile(&username, &config.api_key).await?;
+    let user = lastfm::profile::fetch_profile(&username, &config.api_key).await?;
 
     println!("Username: {}", user.name);
     println!("Number of scrobbles: {}", user.play_count());
@@ -100,7 +100,7 @@ async fn fetch(f: Fetch, config: Config) -> Result<()> {
     };
 
     let new_tracks =
-        lastfm::fetch_tracks(&user, &config.api_key, page, limit, min_timestamp, to).await?;
+        lastfm::recently_played::fetch_tracks(&user, &config.api_key, page, limit, min_timestamp, to).await?;
 
     if new_tracks.is_empty() {
         println!("No new tracks were retrieved from Last.fm");
