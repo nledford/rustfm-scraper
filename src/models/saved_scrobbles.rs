@@ -72,7 +72,8 @@ impl SavedScrobbles {
     }
 
     pub fn total_saved_scrobbles_formatted(&self) -> String {
-        self.total_saved_scrobbles().to_formatted_string(&utils::get_locale())
+        self.total_saved_scrobbles()
+            .to_formatted_string(&utils::get_locale())
     }
 
     fn sort(&mut self) {

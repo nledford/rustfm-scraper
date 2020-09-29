@@ -40,7 +40,8 @@ impl Stats {
 
         println!(
             "Best Month: {} ({} scrobbles)",
-            self.best_month.0, self.best_month.1.to_formatted_string(&utils::get_locale())
+            self.best_month.0,
+            self.best_month.1.to_formatted_string(&utils::get_locale())
         );
     }
 }
