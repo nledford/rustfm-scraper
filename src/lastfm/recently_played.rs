@@ -6,8 +6,7 @@ use futures::prelude::*;
 use indicatif::ProgressBar;
 
 use crate::lastfm;
-use crate::models::{Attr, RecentTracksResponse, User};
-use crate::types::{AllPages, AllTracks, Page};
+use crate::models::{Attr, RecentTracksResponse, Track, User};
 
 // REFERENCE: https://stackoverflow.com/a/51047786
 pub async fn fetch_tracks(
@@ -17,7 +16,7 @@ pub async fn fetch_tracks(
     limit: i32,
     from: i64,
     to: i64,
-) -> Result<AllTracks> {
+) -> Result<Vec<Track>> {
     println!("\nFetching metadata...");
     let metadata = fetch_tracks_metadata(user, api_key, page, limit, from, to).await?;
 
@@ -58,11 +57,11 @@ pub async fn fetch_tracks(
         })
         .buffer_unordered(lastfm::PARALLEL_REQUESTS)
         .map(|t| t.unwrap())
-        .collect::<AllPages>()
+        .collect::<Vec<Vec<Track>>>()
         .await
         .into_iter()
         .flatten()
-        .collect::<AllTracks>();
+        .collect::<Vec<Track>>();
 
     bar.finish();
 
@@ -75,7 +74,7 @@ pub async fn fetch_tracks(
 }
 
 #[async_recursion]
-pub async fn fetch_page(url: &str, client: &reqwest::Client) -> Page {
+pub async fn fetch_page(url: &str, client: &reqwest::Client) -> Vec<Track> {
     let resp = match client.get(url).send().await {
         Ok(resp) => resp,
         Err(_) => return fetch_page(url, client).await,

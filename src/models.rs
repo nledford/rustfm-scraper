@@ -8,7 +8,6 @@ use csv::{Reader, Writer};
 use serde::{Deserialize, Serialize};
 
 use crate::stats::Stats;
-use crate::types::AllSavedScrobbles;
 
 #[derive(Debug, Deserialize)]
 pub struct UserResponse {
@@ -236,7 +235,7 @@ impl Default for SavedScrobbles {
 }
 
 impl SavedScrobbles {
-    pub fn new(saved_scrobbles: AllSavedScrobbles) -> Self {
+    pub fn new(saved_scrobbles: Vec<SavedScrobble>) -> Self {
         let mut saved_scrobbles = Self { saved_scrobbles };
         saved_scrobbles.sort();
         saved_scrobbles
@@ -254,7 +253,7 @@ impl SavedScrobbles {
         let saved_scrobbles = rdr
             .deserialize::<SavedScrobble>()
             .map(|scrobble| scrobble.expect("Error deserializing scrobble"))
-            .collect::<AllSavedScrobbles>();
+            .collect::<Vec<SavedScrobble>>();
         let mut saved_scrobbles = SavedScrobbles::new(saved_scrobbles);
         saved_scrobbles.sort();
         saved_scrobbles
@@ -295,7 +294,7 @@ impl SavedScrobbles {
         scrobbles
             .iter()
             .map(|scrobble| SavedScrobble::from_scrobble(scrobble))
-            .collect::<AllSavedScrobbles>()
+            .collect::<Vec<SavedScrobble>>()
     }
 }
 
@@ -322,11 +321,11 @@ impl SavedScrobble {
         }
     }
 
-    pub fn from_scrobbles(scrobbles: &[Track]) -> AllSavedScrobbles {
+    pub fn from_scrobbles(scrobbles: &[Track]) -> Vec<SavedScrobble> {
         scrobbles
             .iter()
             .map(|scrobble| SavedScrobble::from_scrobble(scrobble))
-            .collect::<AllSavedScrobbles>()
+            .collect::<Vec<SavedScrobble>>()
     }
 
     pub fn date(&self) -> NaiveDate {
