@@ -1,8 +1,29 @@
 use std::ops::Sub;
 
 use chrono::Duration;
+use num_format::{Locale, SystemLocale};
 
 use crate::models::saved_scrobbles::SavedScrobble;
+
+pub fn get_locale() -> Locale {
+    let system_locale = SystemLocale::default().expect("Error retrieving system locale");
+
+    let system_locale_name = system_locale
+        .name()
+        .split('.')
+        .map(String::from)
+        .collect::<Vec<String>>()
+        .first()
+        .expect("Error getting system locale first half")
+        .split('_')
+        .collect::<Vec<&str>>()
+        .first()
+        .expect("Error getting system local short name")
+        .to_string();
+
+    Locale::from_name(system_locale_name).expect("Error building locale from system locale")
+}
+
 
 /// Retrieves the current UTC date and time as a unix timestamp in seconds
 pub fn get_current_unix_timestamp() -> i64 {

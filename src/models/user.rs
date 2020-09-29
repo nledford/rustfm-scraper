@@ -1,4 +1,7 @@
+use num_format::ToFormattedString;
 use serde::Deserialize;
+
+use crate::utils;
 
 #[derive(Deserialize)]
 pub struct UserResponse {
@@ -61,8 +64,18 @@ impl User {
         self.playlists.parse().unwrap()
     }
 
+    /// Get the number of playlists created by the user, formatted according to the user's system locale
+    pub fn playlists_formatted(&self) -> String {
+        self.playlists().to_formatted_string(&utils::get_locale())
+    }
+
     /// Get the total number of scrobbles by the user
     pub fn play_count(&self) -> i32 {
         self.play_count.parse().unwrap()
+    }
+
+    pub fn play_count_formatted(&self) -> String {
+        let locale = utils::get_locale();
+        self.play_count().to_formatted_string(&locale)
     }
 }

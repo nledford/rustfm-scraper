@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use chrono::{Datelike, NaiveDate};
+use num_format::ToFormattedString;
 
 use crate::models::saved_scrobbles::SavedScrobble;
 use crate::utils;
@@ -39,7 +40,7 @@ impl Stats {
 
         println!(
             "Best Month: {} ({} scrobbles)",
-            self.best_month.0, self.best_month.1
+            self.best_month.0, self.best_month.1.to_formatted_string(&utils::get_locale())
         );
     }
 }

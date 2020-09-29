@@ -3,10 +3,12 @@ use std::fs::File;
 
 use chrono::prelude::*;
 use csv::{Reader, Writer};
+use num_format::ToFormattedString;
 use serde::{Deserialize, Serialize};
 
 use crate::models::recent_tracks::Track;
 use crate::stats::Stats;
+use crate::utils;
 
 pub struct SavedScrobbles {
     saved_scrobbles: Vec<SavedScrobble>,
@@ -67,6 +69,10 @@ impl SavedScrobbles {
 
     pub fn total_saved_scrobbles(&self) -> i32 {
         self.saved_scrobbles.len() as i32
+    }
+
+    pub fn total_saved_scrobbles_formatted(&self) -> String {
+        self.total_saved_scrobbles().to_formatted_string(&utils::get_locale())
     }
 
     fn sort(&mut self) {

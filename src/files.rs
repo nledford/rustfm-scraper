@@ -39,13 +39,11 @@ pub fn append_to_csv(
 
     saved_scrobbles.append_new_scrobbles(scrobbles);
 
-    let new_total_scrobbles = saved_scrobbles.total_saved_scrobbles();
-
     let mut wtr = csv::Writer::from_path(file).expect("Error creating csv writer");
     saved_scrobbles.to_csv_writer(&mut wtr);
     wtr.flush().expect("Error flushing csv writer");
 
-    Ok(new_total_scrobbles)
+    Ok(saved_scrobbles.total_saved_scrobbles())
 }
 
 pub fn load_from_csv(username: &str) -> SavedScrobbles {
@@ -58,7 +56,7 @@ pub fn load_from_csv(username: &str) -> SavedScrobbles {
 
     println!(
         "{} saved scrobbles retrieved from file\n",
-        &saved_scrobbles.total_saved_scrobbles()
+        &saved_scrobbles.total_saved_scrobbles_formatted()
     );
 
     saved_scrobbles
