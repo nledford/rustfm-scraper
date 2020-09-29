@@ -3,11 +3,11 @@ use std::env;
 use anyhow::Result;
 use clap::Clap;
 
-use rustfm_scraper::{app, config, files, lastfm, utils};
-use rustfm_scraper::app::{Fetch, Opts};
 use rustfm_scraper::app::SubCommand;
+use rustfm_scraper::app::{Fetch, Opts};
 use rustfm_scraper::config::Config;
 use rustfm_scraper::models::saved_scrobbles::SavedScrobbles;
+use rustfm_scraper::{app, config, files, lastfm, utils};
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -99,8 +99,15 @@ async fn fetch(f: Fetch, config: Config) -> Result<()> {
         from
     };
 
-    let new_tracks =
-        lastfm::recently_played::fetch_tracks(&user, &config.api_key, page, limit, min_timestamp, to).await?;
+    let new_tracks = lastfm::recently_played::fetch_tracks(
+        &user,
+        &config.api_key,
+        page,
+        limit,
+        min_timestamp,
+        to,
+    )
+    .await?;
 
     if new_tracks.is_empty() {
         println!("No new tracks were retrieved from Last.fm");

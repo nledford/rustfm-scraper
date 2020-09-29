@@ -23,6 +23,3 @@ fn build_request_url(
             to = to,
     )
 }
-
-
-

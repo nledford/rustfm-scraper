@@ -3,4 +3,3 @@
 pub mod recent_tracks;
 pub mod saved_scrobbles;
 pub mod user;
-
