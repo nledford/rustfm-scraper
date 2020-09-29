@@ -6,7 +6,8 @@ use futures::prelude::*;
 use indicatif::ProgressBar;
 
 use crate::lastfm;
-use crate::models::{Attr, RecentTracksResponse, Track, User};
+use crate::models::recent_tracks::{Attr, RecentTracksResponse, Track};
+use crate::models::user::User;
 
 // REFERENCE: https://stackoverflow.com/a/51047786
 pub async fn fetch_tracks(

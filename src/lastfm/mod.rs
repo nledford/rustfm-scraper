@@ -1,4 +1,4 @@
-use crate::models::User;
+use crate::models::user::User;
 
 pub mod profile;
 pub mod recently_played;

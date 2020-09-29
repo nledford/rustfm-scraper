@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use chrono::{Datelike, NaiveDate};
 
-use crate::models::SavedScrobble;
+use crate::models::saved_scrobbles::SavedScrobble;
 use crate::utils;
 
 pub struct Stats {

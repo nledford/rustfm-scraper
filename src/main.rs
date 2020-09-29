@@ -3,11 +3,11 @@ use std::env;
 use anyhow::Result;
 use clap::Clap;
 
-use rustfm_scraper::app::SubCommand;
-use rustfm_scraper::app::{Fetch, Opts};
-use rustfm_scraper::config::Config;
-use rustfm_scraper::models::SavedScrobbles;
 use rustfm_scraper::{app, config, files, lastfm, utils};
+use rustfm_scraper::app::{Fetch, Opts};
+use rustfm_scraper::app::SubCommand;
+use rustfm_scraper::config::Config;
+use rustfm_scraper::models::saved_scrobbles::SavedScrobbles;
 
 #[tokio::main]
 async fn main() -> Result<()> {

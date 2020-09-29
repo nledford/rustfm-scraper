@@ -3,7 +3,8 @@ use std::path::PathBuf;
 
 use anyhow::Result;
 
-use crate::models::{SavedScrobbles, Track};
+use crate::models::recent_tracks::Track;
+use crate::models::saved_scrobbles::SavedScrobbles;
 
 fn build_csv_path(username: &str) -> PathBuf {
     let current_dir =

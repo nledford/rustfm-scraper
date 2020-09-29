@@ -2,7 +2,7 @@ use std::ops::Sub;
 
 use chrono::Duration;
 
-use crate::models::SavedScrobble;
+use crate::models::saved_scrobbles::SavedScrobble;
 
 /// Retrieves the current UTC date and time as a unix timestamp in seconds
 pub fn get_current_unix_timestamp() -> i64 {
