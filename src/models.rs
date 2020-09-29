@@ -1,10 +1,13 @@
 //! Represents data retrieved from the Last.fm API and stored locally in files
 
 use std::collections::hash_map::DefaultHasher;
+use std::fs::File;
 
 use chrono::prelude::*;
+use csv::{Reader, Writer};
 use serde::{Deserialize, Serialize};
 
+use crate::stats::Stats;
 use crate::types::{AllSavedScrobbles, AllTracks};
 
 #[derive(Debug, Deserialize)]
@@ -221,32 +224,76 @@ impl Date {
 // ############################################################################
 
 pub struct SavedScrobbles {
-    saved_scrobbles: Vec<SavedScrobble>
+    saved_scrobbles: Vec<SavedScrobble>,
+}
+
+impl Default for SavedScrobbles {
+    fn default() -> Self {
+        Self {
+            saved_scrobbles: Vec::default(),
+        }
+    }
 }
 
 impl SavedScrobbles {
-    pub fn new(scrobbles: AllTracks) -> Self {
-        let mut saved_scrobbles: Self =  Self {
-            saved_scrobbles: SavedScrobbles::from_scrobbles(scrobbles)
+    pub fn new(saved_scrobbles: AllSavedScrobbles) -> Self {
+        let mut saved_scrobbles = Self { saved_scrobbles };
+        saved_scrobbles.sort();
+        saved_scrobbles
+    }
+
+    pub fn from_scrobbles(scrobbles: AllTracks) -> Self {
+        let mut saved_scrobbles = Self {
+            saved_scrobbles: SavedScrobbles::convert_scrobbles(scrobbles),
         };
         saved_scrobbles.sort();
         saved_scrobbles
     }
 
+    pub fn from_csv_reader(rdr: &mut Reader<File>) -> Self {
+        let saved_scrobbles = rdr
+            .deserialize::<SavedScrobble>()
+            .map(|scrobble| scrobble.expect("Error deserializing scrobble"))
+            .collect::<AllSavedScrobbles>();
+        let mut saved_scrobbles = SavedScrobbles::new(saved_scrobbles);
+        saved_scrobbles.sort();
+        saved_scrobbles
+    }
+
+    pub fn to_csv_writer(&self, wtr: &mut Writer<File>) {
+        for scrobble in &self.saved_scrobbles {
+            wtr.serialize(scrobble).expect("Error serializing scrobble")
+        }
+    }
+
     pub fn append_new_scrobbles(&mut self, new_scrobbles: AllTracks) {
-        let mut new_saved_scrobbles = SavedScrobbles::from_scrobbles(new_scrobbles);
+        let mut new_saved_scrobbles = SavedScrobbles::convert_scrobbles(new_scrobbles);
         self.saved_scrobbles.append(&mut new_saved_scrobbles);
         self.sort()
     }
 
+    pub fn generate_stats(&self) -> Stats {
+        Stats::new(&self.saved_scrobbles)
+    }
+
+    pub fn most_recent_scrobble(&self) -> Option<&SavedScrobble> {
+        self.saved_scrobbles.first()
+    }
+
+    pub fn total_saved_scrobbles(&self) -> i32 {
+        self.saved_scrobbles.len() as i32
+    }
+
     fn sort(&mut self) {
-        self.saved_scrobbles.sort_unstable_by_key(|s| s.timestamp_utc);
+        self.saved_scrobbles
+            .sort_unstable_by_key(|s| s.timestamp_utc);
         self.saved_scrobbles.dedup_by_key(|s| s.calculate_hash());
         self.saved_scrobbles.reverse();
     }
 
-    fn from_scrobbles(scrobbles: AllTracks) -> Vec<SavedScrobble> {
-        scrobbles.iter()
+    fn convert_scrobbles(scrobbles: AllTracks) -> Vec<SavedScrobble> {
+        scrobbles
+            .iter()
             .map(|scrobble| SavedScrobble::from_scrobble(scrobble))
             .collect::<AllSavedScrobbles>()
     }

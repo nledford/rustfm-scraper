@@ -3,7 +3,6 @@ use std::collections::HashMap;
 use chrono::{Datelike, NaiveDate};
 
 use crate::models::SavedScrobble;
-use crate::types::AllSavedScrobbles;
 use crate::utils;
 
 pub struct Stats {
@@ -16,14 +15,14 @@ pub struct Stats {
 }
 
 impl Stats {
-    pub fn new(scrobbles: AllSavedScrobbles) -> Self {
+    pub fn new(scrobbles: &[SavedScrobble]) -> Self {
         Self {
-            average_tracks_per_day: calculate_daily_average(&scrobbles),
-            average_tracks_per_week: calculate_weekly_average(&scrobbles),
-            average_tracks_per_month: calculate_monthly_average(&scrobbles),
-            average_tracks_per_year: calculate_yearly_average(&scrobbles),
+            average_tracks_per_day: calculate_daily_average(scrobbles),
+            average_tracks_per_week: calculate_weekly_average(scrobbles),
+            average_tracks_per_month: calculate_monthly_average(scrobbles),
+            average_tracks_per_year: calculate_yearly_average(scrobbles),
 
-            best_month: calculate_best_month(&scrobbles),
+            best_month: calculate_best_month(scrobbles),
         }
     }
 

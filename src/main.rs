@@ -6,7 +6,8 @@ use clap::Clap;
 use rustfm_scraper::app::SubCommand;
 use rustfm_scraper::app::{Fetch, Opts};
 use rustfm_scraper::config::Config;
-use rustfm_scraper::{app, config, files, lastfm, stats, utils};
+use rustfm_scraper::models::SavedScrobbles;
+use rustfm_scraper::{app, config, files, lastfm, utils};
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -48,7 +49,7 @@ async fn fetch(f: Fetch, config: Config) -> Result<()> {
         (true, files::load_from_csv(&user.name))
     } else {
         println!("Creating new file...");
-        (false, Vec::new())
+        (false, SavedScrobbles::default())
     };
 
     let page = match f.page {
@@ -90,7 +91,7 @@ async fn fetch(f: Fetch, config: Config) -> Result<()> {
 
         Utc::now().date().and_hms(0, 0, 0).timestamp()
     } else if append_tracks {
-        match saved_tracks.get(0) {
+        match saved_tracks.most_recent_scrobble() {
             Some(track) => track.timestamp_utc + 10,
             None => 0,
         }
@@ -111,7 +112,7 @@ async fn fetch(f: Fetch, config: Config) -> Result<()> {
             "Saving {} new tracks to existing file...",
             &new_tracks.len()
         );
-        files::append_to_csv(&new_tracks, &mut saved_tracks, &user.name)?
+        files::append_to_csv(new_tracks, &mut saved_tracks, &user.name)?
     } else {
         println!("Saving {} tracks to file...", &new_tracks.len());
         files::save_to_csv(&new_tracks, &user.name)?
@@ -146,10 +147,10 @@ fn stats(s: app::Stats, config: Config) -> Result<()> {
         return Ok(());
     }
 
-    let tracks = files::load_from_csv(&username);
+    let saved_scrobbles = files::load_from_csv(&username);
 
     println!("Crunching stats for {}...\n", &username);
-    let stats = stats::Stats::new(tracks);
+    let stats = saved_scrobbles.generate_stats();
     stats.print();
 
     Ok(())
