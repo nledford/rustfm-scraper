@@ -1,9 +1,9 @@
 use anyhow::Result;
 
-use crate::{files, lastfm, utils};
 use crate::app::Fetch;
 use crate::config::Config;
 use crate::models::saved_scrobbles::SavedScrobbles;
+use crate::{files, lastfm, utils};
 
 pub async fn fetch(f: Fetch, config: Config) -> Result<()> {
     let username = match f.username {
@@ -80,7 +80,7 @@ pub async fn fetch(f: Fetch, config: Config) -> Result<()> {
         min_timestamp,
         to,
     )
-        .await?;
+    .await?;
 
     if new_tracks.is_empty() {
         println!("No new tracks were retrieved from Last.fm");

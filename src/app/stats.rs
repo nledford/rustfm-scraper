@@ -1,7 +1,7 @@
 use anyhow::Result;
 
-use crate::{app, files};
 use crate::config::Config;
+use crate::{app, files};
 
 pub fn stats(s: app::Stats, config: Config) -> Result<()> {
     let username = match s.username {
