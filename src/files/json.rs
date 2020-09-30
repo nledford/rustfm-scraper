@@ -15,7 +15,11 @@ pub fn save_to_json(scrobbles: &[Track], username: &str) -> Result<i32> {
     Ok(scrobbles.total_saved_scrobbles())
 }
 
-pub fn append_to_json(scrobbles: &[Track], saved_scrobbles: &mut SavedScrobbles, username: &str) -> Result<i32> {
+pub fn append_to_json(
+    scrobbles: &[Track],
+    saved_scrobbles: &mut SavedScrobbles,
+    username: &str,
+) -> Result<i32> {
     let file = files::build_file_path(username, "json");
     saved_scrobbles.append_new_scrobbles(scrobbles);
     saved_scrobbles.save_as_json(&file)?;

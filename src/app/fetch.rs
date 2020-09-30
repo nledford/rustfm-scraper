@@ -18,13 +18,13 @@ pub async fn fetch(f: Fetch, config: Config) -> Result<()> {
     println!("Username: {}", user.name);
     println!("Number of scrobbles: {}", user.play_count_formatted());
 
-    let (append_tracks, mut saved_tracks) = if files::csv::check_if_csv_exists(&user.name) && !f.new_file
-    {
-        (true, files::csv::load_from_csv(&user.name))
-    } else {
-        println!("Creating new file...");
-        (false, SavedScrobbles::default())
-    };
+    let (append_tracks, mut saved_tracks) =
+        if files::csv::check_if_csv_exists(&user.name) && !f.new_file {
+            (true, files::csv::load_from_csv(&user.name))
+        } else {
+            println!("Creating new file...");
+            (false, SavedScrobbles::default())
+        };
 
     let page = match f.page {
         Some(page) => {
