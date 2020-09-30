@@ -1,7 +1,5 @@
-
 #[cfg(test)]
 mod tests {
-    use super::*;
     use assert_cmd::Command;
 
     #[test]
