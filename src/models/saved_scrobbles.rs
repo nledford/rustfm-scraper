@@ -1,6 +1,8 @@
 use std::collections::hash_map::DefaultHasher;
 use std::fs::File;
+use std::path::PathBuf;
 
+use anyhow::Result;
 use chrono::prelude::*;
 use csv::{Reader, Writer};
 use num_format::ToFormattedString;
@@ -51,6 +53,16 @@ impl SavedScrobbles {
         for scrobble in &self.saved_scrobbles {
             wtr.serialize(scrobble).expect("Error serializing scrobble")
         }
+    }
+
+    pub fn save_as_json(&self, file: &PathBuf) -> Result<()> {
+        serde_json::to_writer(&File::create(file)?, &self.saved_scrobbles)?;
+        Ok(())
+    }
+
+    pub fn load_from_json(file: &PathBuf) -> Result<Self> {
+        let saved_scrobbles: Vec<SavedScrobble> = serde_json::from_reader(&File::open(file)?)?;
+        Ok(SavedScrobbles::new(saved_scrobbles))
     }
 
     pub fn append_new_scrobbles(&mut self, new_scrobbles: &[Track]) {

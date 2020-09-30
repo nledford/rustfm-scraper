@@ -18,9 +18,9 @@ pub async fn fetch(f: Fetch, config: Config) -> Result<()> {
     println!("Username: {}", user.name);
     println!("Number of scrobbles: {}", user.play_count_formatted());
 
-    let (append_tracks, mut saved_tracks) = if files::check_if_csv_exists(&user.name) && !f.new_file
+    let (append_tracks, mut saved_tracks) = if files::csv::check_if_csv_exists(&user.name) && !f.new_file
     {
-        (true, files::load_from_csv(&user.name))
+        (true, files::csv::load_from_csv(&user.name))
     } else {
         println!("Creating new file...");
         (false, SavedScrobbles::default())
@@ -93,13 +93,13 @@ pub async fn fetch(f: Fetch, config: Config) -> Result<()> {
             "Saving {} new tracks to existing file...",
             &new_tracks.len().to_formatted_string(&utils::get_locale())
         );
-        files::append_to_csv(&new_tracks, &mut saved_tracks, &user.name)?
+        files::csv::append_to_csv(&new_tracks, &mut saved_tracks, &user.name)?
     } else {
         println!(
             "Saving {} tracks to file...",
             &new_tracks.len().to_formatted_string(&utils::get_locale())
         );
-        files::save_to_csv(&new_tracks, &user.name)?
+        files::csv::save_to_csv(&new_tracks, &user.name)?
     };
 
     if new_total != user.play_count() {

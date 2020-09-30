@@ -1,25 +1,15 @@
-use std::env;
-use std::path::PathBuf;
-
 use anyhow::Result;
 
+use crate::files;
 use crate::models::recent_tracks::Track;
 use crate::models::saved_scrobbles::SavedScrobbles;
 
-fn build_csv_path(username: &str) -> PathBuf {
-    let current_dir =
-        env::current_dir().expect("Error fetching current directory from environment");
-    current_dir.join(format!("{}.csv", username))
-}
-
 pub fn check_if_csv_exists(username: &str) -> bool {
-    let file = build_csv_path(username);
-
-    file.exists()
+    files::check_if_file_exists(username, "csv")
 }
 
 pub fn save_to_csv(scrobbles: &[Track], username: &str) -> Result<i32> {
-    let file = build_csv_path(username);
+    let file = files::build_file_path(username, "csv");
 
     let scrobbles = SavedScrobbles::from_scrobbles(scrobbles);
 
@@ -35,7 +25,7 @@ pub fn append_to_csv(
     saved_scrobbles: &mut SavedScrobbles,
     username: &str,
 ) -> Result<i32> {
-    let file = build_csv_path(username);
+    let file = files::build_file_path(username, "csv");
 
     saved_scrobbles.append_new_scrobbles(scrobbles);
 
@@ -49,7 +39,7 @@ pub fn append_to_csv(
 pub fn load_from_csv(username: &str) -> SavedScrobbles {
     println!("Loading saved scrobbles from `{}.csv`...", username);
 
-    let file = build_csv_path(username);
+    let file = files::build_file_path(username, "csv");
 
     let mut rdr = csv::Reader::from_path(file).expect("Error creating csv reader");
     let saved_scrobbles = SavedScrobbles::from_csv_reader(&mut rdr);
