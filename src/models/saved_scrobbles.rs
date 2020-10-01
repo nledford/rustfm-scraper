@@ -1,7 +1,5 @@
 use std::collections::hash_map::DefaultHasher;
-use std::fs;
 use std::fs::File;
-use std::io::BufWriter;
 use std::path::PathBuf;
 
 use anyhow::Result;
@@ -59,17 +57,6 @@ impl SavedScrobbles {
 
     pub fn save_as_json(&self, file: &PathBuf) -> Result<()> {
         serde_json::to_writer_pretty(&File::create(file)?, &self.saved_scrobbles)?;
-
-        // let json = serde_json::to_string_pretty(&self.saved_scrobbles)?;
-        // fs::write(file, &json)?;
-
-        // let file = file.to_str().unwrap().to_string();
-        // println!("FILE: {}", file);
-        //
-        // let f = fs::File::create(file)?;
-        // let mut bw = BufWriter::new(f);
-        // serde_json::to_writer_pretty(bw, &self.saved_scrobbles)?;
-
         Ok(())
     }
 
