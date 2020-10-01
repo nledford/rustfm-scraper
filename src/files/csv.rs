@@ -36,12 +36,12 @@ pub fn append_to_csv(
     Ok(saved_scrobbles.total_saved_scrobbles())
 }
 
-pub fn load_from_csv(username: &str) -> SavedScrobbles {
+pub fn load_from_csv(username: &str) -> Result<SavedScrobbles> {
     println!("Loading saved scrobbles from `{}.csv`...", username);
 
     let file = files::build_file_path(username, "csv");
 
-    let mut rdr = csv::Reader::from_path(file).expect("Error creating csv reader");
+    let mut rdr = csv::Reader::from_path(file)?;
     let saved_scrobbles = SavedScrobbles::from_csv_reader(&mut rdr);
 
     println!(
@@ -49,5 +49,5 @@ pub fn load_from_csv(username: &str) -> SavedScrobbles {
         &saved_scrobbles.total_saved_scrobbles_formatted()
     );
 
-    saved_scrobbles
+    Ok(saved_scrobbles)
 }
