@@ -70,6 +70,8 @@ pub fn load_from_any_file(username: &str) -> Result<SavedScrobbles> {
 }
 
 pub fn load_from_file(username: &str, file_format: &str) -> Result<SavedScrobbles> {
+    println!("Loading saved scrobbles from `{}.{}`...", username, file_format);
+
     if file_format == "csv" {
         csv::load_from_csv(username)
     } else {
