@@ -44,7 +44,7 @@ pub fn find_which_file_exists(username: &str) -> Option<&str> {
 }
 
 pub fn save_to_file(scrobbles: &[Track], username: &str, file_format: &str) -> Result<i32> {
-    if file_format == "csv".to_string() {
+    if file_format == "csv" {
         csv::save_to_csv(scrobbles, username)
     } else {
         json::save_to_json(scrobbles, username)
@@ -57,7 +57,7 @@ pub fn append_to_file(
     username: &str,
     file_format: &str,
 ) -> Result<i32> {
-    if file_format == "csv".to_string() {
+    if file_format == "csv" {
         csv::append_to_csv(scrobbles, saved_scrobbles, username)
     } else {
         json::append_to_json(scrobbles, saved_scrobbles, username)
