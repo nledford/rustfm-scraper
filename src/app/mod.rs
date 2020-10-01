@@ -43,6 +43,9 @@ pub struct Fetch {
     /// Fetches all new tracks from beginning of current day, rather than since last saved track
     #[clap(long, takes_value = false)]
     pub current_day: bool,
+    /// Specify which file format to use. Defaults to json
+    #[clap(long)]
+    pub file_format: Option<String>,
 }
 
 /// A subcommand for calculating stats from a saved file

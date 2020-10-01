@@ -9,16 +9,18 @@ pub fn stats(s: app::Stats, config: Config) -> Result<()> {
         None => config.default_username,
     };
 
-    let file_exists = files::csv::check_if_csv_exists(&username);
-    if !file_exists {
-        println!(
-            "No file for `{}` exists. Stats cannot be calculated.",
-            &username
-        );
-        return Ok(());
-    }
+    match files::find_which_file_exists(&username) {
+        Some(_) => true,
+        None => {
+            println!(
+                "No file for `{}` exists. Stats cannot be calculated.",
+                &username
+            );
+            return Ok(());
+        }
+    };
 
-    let saved_scrobbles = files::csv::load_from_csv(&username);
+    let saved_scrobbles = files::load_from_any_file(&username)?;
 
     println!("Crunching stats for {}...\n", &username);
     let stats = saved_scrobbles.generate_stats();

@@ -4,10 +4,6 @@ use crate::files;
 use crate::models::recent_tracks::Track;
 use crate::models::saved_scrobbles::SavedScrobbles;
 
-pub fn check_if_csv_exists(username: &str) -> bool {
-    files::check_if_file_exists(username, "csv")
-}
-
 pub fn save_to_csv(scrobbles: &[Track], username: &str) -> Result<i32> {
     let file = files::build_file_path(username, "csv");
 

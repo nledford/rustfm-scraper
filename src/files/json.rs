@@ -4,10 +4,6 @@ use crate::files;
 use crate::models::recent_tracks::Track;
 use crate::models::saved_scrobbles::SavedScrobbles;
 
-pub fn check_if_json_exists(username: &str) -> bool {
-    files::check_if_file_exists(username, "json")
-}
-
 pub fn save_to_json(scrobbles: &[Track], username: &str) -> Result<i32> {
     let file = files::build_file_path(username, "json");
     let scrobbles = SavedScrobbles::from_scrobbles(scrobbles);

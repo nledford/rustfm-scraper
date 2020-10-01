@@ -18,13 +18,26 @@ pub async fn fetch(f: Fetch, config: Config) -> Result<()> {
     println!("Username: {}", user.name);
     println!("Number of scrobbles: {}", user.play_count_formatted());
 
-    let (append_tracks, mut saved_tracks) =
-        if files::csv::check_if_csv_exists(&user.name) && !f.new_file {
-            (true, files::csv::load_from_csv(&user.name))
-        } else {
-            println!("Creating new file...");
-            (false, SavedScrobbles::default())
-        };
+    let file_format = match f.file_format {
+        Some(format) => format,
+        None => "json".to_string(),
+    };
+
+    let mut saved_tracks = if !f.new_file {
+        match files::load_from_file(&user.name, &file_format) {
+            Ok(saved_scrobbles) => saved_scrobbles,
+            Err(_) => {
+                println!(
+                    "Existing file for `{}` not found. Creating new file...",
+                    &user.name
+                );
+                SavedScrobbles::default()
+            }
+        }
+    } else {
+        println!("Creating new file...");
+        SavedScrobbles::default()
+    };
 
     let page = match f.page {
         Some(page) => {
@@ -64,7 +77,7 @@ pub async fn fetch(f: Fetch, config: Config) -> Result<()> {
         use chrono::prelude::*;
 
         Utc::now().date().and_hms(0, 0, 0).timestamp()
-    } else if append_tracks {
+    } else if !saved_tracks.is_empty() {
         match saved_tracks.most_recent_scrobble() {
             Some(track) => track.timestamp_utc + 10,
             None => 0,
@@ -88,21 +101,21 @@ pub async fn fetch(f: Fetch, config: Config) -> Result<()> {
         return Ok(());
     }
 
-    let new_total = if append_tracks {
+    let new_total = if !saved_tracks.is_empty() {
         println!(
             "Saving {} new tracks to existing file...",
             &new_tracks.len().to_formatted_string(&utils::get_locale())
         );
-        files::csv::append_to_csv(&new_tracks, &mut saved_tracks, &user.name)?
+        files::append_to_file(&new_tracks, &mut saved_tracks, &user.name, &file_format)?
     } else {
         println!(
             "Saving {} tracks to file...",
             &new_tracks.len().to_formatted_string(&utils::get_locale())
         );
-        files::csv::save_to_csv(&new_tracks, &user.name)?
+        files::save_to_file(&new_tracks, &user.name, &file_format)?
     };
 
-    if new_total != user.play_count() {
+    if new_total != user.play_count() && !f.current_day {
         println!(
             "{} scrobbles were saved to the file, when {} scrobbles were expected.",
             new_total.to_formatted_string(&utils::get_locale()),
