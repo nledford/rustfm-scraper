@@ -1,10 +1,10 @@
 use anyhow::Result;
 use num_format::ToFormattedString;
 
+use crate::{files, lastfm, utils};
 use crate::app::Fetch;
 use crate::config::Config;
 use crate::models::saved_scrobbles::SavedScrobbles;
-use crate::{files, lastfm, utils};
 
 pub async fn fetch(f: Fetch, config: Config) -> Result<()> {
     let username = match f.username {
@@ -94,18 +94,22 @@ pub async fn fetch(f: Fetch, config: Config) -> Result<()> {
         min_timestamp,
         to,
     )
-    .await?;
+        .await?;
 
     if new_tracks.is_empty() {
         println!("No new tracks were retrieved from Last.fm");
         return Ok(());
     }
 
+    let new_tracks_len = &new_tracks.len();
     let new_total = if !saved_tracks.is_empty() {
-        println!(
-            "Saving {} new tracks to existing file...",
-            &new_tracks.len().to_formatted_string(&utils::get_locale())
-        );
+        match new_tracks_len {
+            1 => println!("Saving one new track to existing file..."),
+            _ => println!(
+                "Saving {} new tracks to existing file...",
+                new_tracks_len.to_formatted_string(&utils::get_locale())
+            )
+        }
         files::append_to_file(&new_tracks, &mut saved_tracks, &user.name, &file_format)?
     } else {
         println!(
@@ -123,10 +127,13 @@ pub async fn fetch(f: Fetch, config: Config) -> Result<()> {
         );
         println!("Please consider creating a new file with the new file flag. `-n`");
     } else {
-        println!(
-            "{} scrobbles saved.",
-            new_total.to_formatted_string(&utils::get_locale())
-        );
+        match new_total {
+            1 => println!("One scrobble saved"),
+            _ => println!(
+                "{} scrobbles saved.",
+                new_total.to_formatted_string(&utils::get_locale())
+            )
+        }
     }
 
     Ok(())
