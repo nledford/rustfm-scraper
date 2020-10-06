@@ -58,7 +58,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cd9fd44efafa8690358b7408d253adf110036b88f55672a933f01d616ad9b1b9"
 dependencies = [
  "nodrop",
- "serde",
 ]
 
 [[package]]
@@ -1079,7 +1078,6 @@ dependencies = [
  "lazy_static",
  "libc",
  "num-format-windows",
- "serde",
  "widestring",
  "winapi 0.3.9",
 ]
