@@ -107,8 +107,7 @@ pub async fn fetch_tracks_metadata(
                       to = to,
     );
 
-    let recent_tracks_response: RecentTracksResponse =
-        reqwest::get(&url).await.unwrap().json().await.unwrap();
+    let recent_tracks_response: RecentTracksResponse = reqwest::get(&url).await?.json().await?;
 
     Ok(recent_tracks_response.recent_tracks.attr)
 }
