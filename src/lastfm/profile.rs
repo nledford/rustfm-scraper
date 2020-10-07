@@ -14,8 +14,8 @@ pub async fn fetch_profile(username: &str, api_key: &str) -> Result<User> {
     let user = match user_response {
         ApiResponse::Success(user_response) => user_response.user,
         ApiResponse::Failure(error) => {
-            println!("An error occurred at Last.fm's API:");
-            println!("{}", &error.message);
+            eprintln!("An error occurred at Last.fm's API:");
+            eprintln!("{}", &error.message);
             process::exit(0);
         }
     };
