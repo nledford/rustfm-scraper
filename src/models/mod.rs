@@ -22,7 +22,7 @@ pub struct ErrorResponse {
 impl ErrorResponse {
     pub fn print(&self) {
         eprintln!("An error occurred at Last.fm's API:");
-        eprintln!("CODE:{}\nMESSAGE: {}", self.error, self.message);
-        println!("Check Last.fm's status page for more info: https://status.last.fm");
+        eprintln!("CODE: {}\nMESSAGE: {}", self.error, self.message);
+        println!("Check Last.fm's status page for updates: https://status.last.fm");
     }
 }
