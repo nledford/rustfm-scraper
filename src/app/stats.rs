@@ -9,7 +9,7 @@ pub fn stats(s: app::Stats, config: Config) -> Result<()> {
         None => config.default_username,
     };
 
-    match files::find_which_file_exists(&username) {
+    match files::find_which_file_exists(&username)? {
         Some(_) => true,
         None => {
             println!(

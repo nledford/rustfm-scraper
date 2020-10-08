@@ -1,7 +1,7 @@
 use std::env;
 use std::path::PathBuf;
 
-use anyhow::Result;
+use anyhow::{Context, Result};
 
 use crate::models::recent_tracks::Track;
 use crate::models::saved_scrobbles::SavedScrobbles;
@@ -17,30 +17,32 @@ fn validate_extension(extension: &str) {
     }
 }
 
-fn build_file_path(username: &str, extension: &str) -> PathBuf {
+fn build_file_path(username: &str, extension: &str) -> Result<PathBuf> {
     validate_extension(extension);
 
     let current_dir =
-        env::current_dir().expect("Error fetching current directory from environment");
-    current_dir.join(format!("{}.{}", username, extension))
+        env::current_dir().context("Error fetching current directory from environment")?;
+    Ok(current_dir.join(format!("{}.{}", username, extension)))
 }
 
-pub fn check_if_file_exists(username: &str, extension: &str) -> bool {
+pub fn check_if_file_exists(username: &str, extension: &str) -> Result<bool> {
     validate_extension(extension);
 
-    let file = build_file_path(username, extension);
+    let file = build_file_path(username, extension)?;
 
-    file.exists()
+    Ok(file.exists())
 }
 
-pub fn find_which_file_exists(username: &str) -> Option<&str> {
-    if check_if_file_exists(username, "csv") {
+pub fn find_which_file_exists(username: &str) -> Result<Option<&str>> {
+    let exists = if check_if_file_exists(username, "csv")? {
         Some("csv")
-    } else if check_if_file_exists(username, "json") {
+    } else if check_if_file_exists(username, "json")? {
         Some("json")
     } else {
         None
-    }
+    };
+
+    Ok(exists)
 }
 
 pub fn save_to_file(scrobbles: &[Track], username: &str, file_format: &str) -> Result<i32> {
@@ -65,7 +67,7 @@ pub fn append_to_file(
 }
 
 pub fn load_from_any_file(username: &str) -> Result<SavedScrobbles> {
-    let file_format = find_which_file_exists(username).expect("No valid file was found");
+    let file_format = find_which_file_exists(username)?.context("No valid file was found")?;
     Ok(load_from_file(username, file_format)?)
 }
 
