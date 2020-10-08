@@ -1,11 +1,12 @@
 use std::time;
 
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 use async_recursion::async_recursion;
 use futures::prelude::*;
 use indicatif::ProgressBar;
 
 use crate::lastfm;
+use crate::models::ApiResponse;
 use crate::models::recent_tracks::{Attr, RecentTracksResponse, Track};
 use crate::models::user::User;
 
@@ -105,7 +106,11 @@ pub async fn fetch_tracks_metadata(
                       to = to,
     );
 
-    let recent_tracks_response: RecentTracksResponse = reqwest::get(&url).await?.json().await?;
+    let response: ApiResponse<RecentTracksResponse> = reqwest::get(&url).await?.json().await?;
+    let attr = match response {
+        ApiResponse::Success(recent_tracks_response) => recent_tracks_response.recent_tracks.attr,
+        ApiResponse::Failure(error) => return Err(anyhow!("{}", error.message))
+    };
 
-    Ok(recent_tracks_response.recent_tracks.attr)
+    Ok(attr)
 }
