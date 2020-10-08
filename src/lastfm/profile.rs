@@ -1,5 +1,3 @@
-use std::process;
-
 use anyhow::{anyhow, Result};
 
 use crate::models::ApiResponse;
@@ -17,9 +15,7 @@ pub async fn fetch_profile(username: &str, api_key: &str) -> Result<User> {
 
     let user = match user_response {
         ApiResponse::Success(user_response) => user_response.user,
-        ApiResponse::Failure(error) => {
-            return Err(anyhow!("{:?}", error.message))
-        }
+        ApiResponse::Failure(error) => return Err(anyhow!("{:?}", error.message)),
     };
 
     Ok(user)
