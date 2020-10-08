@@ -36,8 +36,6 @@ pub async fn fetch_tracks(
         );
     }
 
-    println!("\nFetching tracks...");
-
     let urls: Vec<String> = (1..=metadata.total_pages())
         .map(|p| lastfm::build_request_url(user, api_key, p, limit, from, to))
         .collect();
