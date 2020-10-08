@@ -1,9 +1,9 @@
 use std::process;
 
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 
-use crate::models::user::{User, UserResponse};
 use crate::models::ApiResponse;
+use crate::models::user::{User, UserResponse};
 
 pub async fn fetch_profile(username: &str, api_key: &str) -> Result<User> {
     let url = format!("http://ws.audioscrobbler.com/2.0/?method={method}&user={user}&api_key={api_key}&format=json",
@@ -18,8 +18,7 @@ pub async fn fetch_profile(username: &str, api_key: &str) -> Result<User> {
     let user = match user_response {
         ApiResponse::Success(user_response) => user_response.user,
         ApiResponse::Failure(error) => {
-            error.print();
-            process::exit(0)
+            return Err(anyhow!("{:?}", error.message))
         }
     };
 

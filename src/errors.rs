@@ -1,5 +1,4 @@
 use thiserror::Error;
-use tokio::sync::broadcast::RecvError::Lagged;
 
 use crate::models::ErrorResponse;
 
