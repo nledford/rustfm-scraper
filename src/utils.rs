@@ -12,7 +12,8 @@ pub fn get_locale() -> Locale {
         .trim()
         .to_lowercase();
 
-    Locale::from_name(system_locale).expect("Error building locale from system locale")
+    // If the system locale cannot be used, default to American English locale
+    Locale::from_name(system_locale).unwrap_or(Locale::en)
 }
 
 /// Retrieves the current UTC date and time as a unix timestamp in seconds
