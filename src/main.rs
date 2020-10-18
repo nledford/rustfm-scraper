@@ -3,9 +3,9 @@ use std::env;
 use anyhow::Result;
 use clap::Clap;
 
+use rustfm_scraper::{app, config};
 use rustfm_scraper::app::{Opts, SubCommand};
 use rustfm_scraper::config::Config;
-use rustfm_scraper::{app, config};
 
 #[tokio::main]
 async fn main() -> Result<()> {
