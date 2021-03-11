@@ -1,6 +1,6 @@
 [package]
 name = "rustfm-scraper"
-version = "0.2.15" #:version
+version = "0.2.16" #:version
 authors = [ "Nathaniel Ledford <nate@nateledford.com>" ]
 description = "Scrapes listening history from Last.fm and stores it in a file"
 repository = "https://github.com/nledford/rustfm-scraper"
