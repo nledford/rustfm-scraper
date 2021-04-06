@@ -13,7 +13,7 @@ fn validate_extension(extension: &str) {
     let valid_extensions = vec!["csv", "json"];
 
     if !valid_extensions.contains(&extension) {
-        panic!(format!("{} is not a valid extension", extension))
+        panic!("A valid extension was not provided.")
     }
 }
 

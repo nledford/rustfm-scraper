@@ -1,6 +1,6 @@
 [package]
 name = "rustfm-scraper"
-version = "0.2.19" #:version
+version = "0.2.20" #:version
 authors = [ "Nathaniel Ledford <nate@nateledford.com>" ]
 description = "Scrapes listening history from Last.fm and stores it in a file"
 repository = "https://github.com/nledford/rustfm-scraper"
@@ -11,7 +11,7 @@ readme = "README.md"
 edition = "2018"
 
 [dependencies]
-anyhow = "1.0.39"
+anyhow = "1.0.40"
 assert_cmd = "1.0.3"
 async-recursion = "0.3.2"
 chrono = { version = "0.4.19", features = [ "serde" ] }
