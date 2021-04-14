@@ -54,13 +54,13 @@ pub async fn fetch(f: Fetch, config: Config) -> Result<()> {
         Some(limit) => {
             if limit <= 0 {
                 50
-            } else if limit > 200 {
-                200
+            } else if limit > 1000 {
+                1000
             } else {
                 limit
             }
         }
-        None => 200,
+        None => 1000,
     };
 
     let from = match f.from {
