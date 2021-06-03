@@ -1,12 +1,14 @@
+use std::env;
+use std::path::Path;
 use std::str::FromStr;
 use std::time::Duration;
-use std::env;
 
 use anyhow::Result;
 use sqlx::sqlite::{SqliteConnectOptions, SqliteJournalMode, SqliteSynchronous};
 use sqlx::SqlitePool;
 
 use crate::config::Config;
+use std::process::Command;
 
 fn build_connection_string() -> Result<String> {
     let config = Config::load_config()?;
@@ -17,9 +19,31 @@ fn build_connection_string() -> Result<String> {
     Ok(connection_string)
 }
 
-/*pub fn build_sqlite_database() -> Result<()> {
+pub fn build_sqlite_database() -> Result<()> {
+    // Check if sqlite database already exists
+    if Path::new("nateledford.db").exists() {
+        // No need to re-create, return early
+        return Ok(())
+    }
 
-}*/
+    // We just want to set the environment variable
+    let _ = build_connection_string();
+
+    // Create the database
+    let _create = Command::new("sqlx-cli")
+        .arg("database")
+        .arg("create")
+        .output()
+        .expect("Failed to create database with `sqlx-cli`");
+
+    let _migrations = Command::new("sqlx-cli")
+        .arg("migrate")
+        .arg("run")
+        .output()
+        .expect("Failed to run database migrations");
+
+    Ok(())
+}
 
 pub async fn get_sqlite_pool() -> Result<SqlitePool> {
     let connection_string = build_connection_string()?;
