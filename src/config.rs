@@ -123,8 +123,15 @@ fn set_storage_format() -> StorageFormat {
         };
     }
 
+    let storage_format = storage_format.unwrap();
+
+    if storage_format == StorageFormat::Sqlite {
+        println!("Sqlite storage format was selected. Building database now...");
+        db::build_sqlite_database();
+    }
+
     // We can safely unwrap here because `storage_format` should have a value
-    storage_format.unwrap()
+    storage_format
 }
 
 pub fn check_if_config_exists() -> bool {
