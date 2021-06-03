@@ -1,7 +1,7 @@
-use std::{fs, io};
 use std::fs::File;
 use std::io::{BufReader, BufWriter};
 use std::path::{Path, PathBuf};
+use std::{fs, io};
 
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
@@ -22,11 +22,7 @@ pub fn initialize_config() -> Result<()> {
     let username = set_username();
     let storage_format = set_storage_format();
 
-    let config = Config::new(
-        api_key,
-        username,
-        storage_format,
-    );
+    let config = Config::new(api_key, username, storage_format);
 
     config.save_config()
 }
@@ -100,10 +96,7 @@ pub struct Config {
 }
 
 impl Config {
-    pub fn new(api_key: String,
-               default_username: String,
-               storage_format: StorageFormat,
-    ) -> Self {
+    pub fn new(api_key: String, default_username: String, storage_format: StorageFormat) -> Self {
         Self {
             api_key,
             default_username,

@@ -6,9 +6,9 @@ use futures::prelude::*;
 use indicatif::ProgressBar;
 
 use crate::lastfm;
-use crate::models::ApiResponse;
 use crate::models::recent_tracks::{Attr, RecentTracksResponse, Track};
 use crate::models::user::User;
+use crate::models::ApiResponse;
 
 // REFERENCE: https://stackoverflow.com/a/51047786
 pub async fn fetch_tracks(
@@ -109,7 +109,7 @@ pub async fn fetch_tracks_metadata(
     let response: ApiResponse<RecentTracksResponse> = reqwest::get(&url).await?.json().await?;
     let attr = match response {
         ApiResponse::Success(recent_tracks_response) => recent_tracks_response.recent_tracks.attr,
-        ApiResponse::Failure(error) => return Err(anyhow!("{}", error.message))
+        ApiResponse::Failure(error) => return Err(anyhow!("{}", error.message)),
     };
 
     Ok(attr)
