@@ -2,7 +2,7 @@ use std::collections::hash_map::DefaultHasher;
 use std::fs;
 use std::fs::File;
 use std::io::{BufReader, BufWriter};
-use std::path::PathBuf;
+use std::path::Path;
 
 use anyhow::Result;
 use chrono::prelude::*;
@@ -57,7 +57,7 @@ impl SavedScrobbles {
         }
     }
 
-    pub fn save_as_json(&self, file: &PathBuf) -> Result<()> {
+    pub fn save_as_json(&self, file: &Path) -> Result<()> {
         let f = fs::File::create(file)?;
         let bw = BufWriter::new(f);
         serde_json::to_writer_pretty(bw, &self.saved_scrobbles)?;
@@ -65,7 +65,7 @@ impl SavedScrobbles {
         Ok(())
     }
 
-    pub fn load_from_json(file: &PathBuf) -> Result<Self> {
+    pub fn load_from_json(file: &Path) -> Result<Self> {
         let f = fs::File::open(file)?;
         let br = BufReader::new(f);
         let saved_scrobbles: Vec<SavedScrobble> = serde_json::from_reader(br)?;

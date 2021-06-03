@@ -68,7 +68,7 @@ pub fn append_to_file(
 
 pub fn load_from_any_file(username: &str) -> Result<SavedScrobbles> {
     let file_format = find_which_file_exists(username)?.context("No valid file was found")?;
-    Ok(load_from_file(username, file_format)?)
+    load_from_file(username, file_format)
 }
 
 pub fn load_from_file(username: &str, file_format: &str) -> Result<SavedScrobbles> {

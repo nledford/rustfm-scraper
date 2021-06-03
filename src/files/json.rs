@@ -24,5 +24,5 @@ pub fn append_to_json(
 
 pub fn load_from_json(username: &str) -> Result<SavedScrobbles> {
     let file = files::build_file_path(username, "json")?;
-    Ok(SavedScrobbles::load_from_json(&file)?)
+    SavedScrobbles::load_from_json(&file)
 }

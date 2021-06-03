@@ -10,8 +10,8 @@ static CRATE_NAME: &str = env!("CARGO_CRATE_NAME");
 
 #[derive(Deserialize, Serialize)]
 pub enum StorageFormat {
-    CSV,
-    JSON,
+    Csv,
+    Json,
     Sqlite,
 }
 
@@ -28,7 +28,7 @@ pub fn initialize_config() -> Result<()> {
         storage_format,
     );
 
-    Ok(config.save_config()?)
+    config.save_config()
 }
 
 fn set_api_key() -> String {
@@ -57,7 +57,7 @@ fn set_username() -> String {
 fn set_storage_format() -> StorageFormat {
     let mut valid_selection = false;
     let mut selection = String::new();
-    let mut storage_format = Some(StorageFormat::CSV);
+    let mut storage_format = None;
 
     while !valid_selection {
         println!("Select how you would like to save your data: ");
@@ -71,10 +71,10 @@ fn set_storage_format() -> StorageFormat {
 
         storage_format = if selection.as_str() == "1" {
             valid_selection = true;
-            Some(StorageFormat::CSV)
+            Some(StorageFormat::Csv)
         } else if selection.as_str() == "2" {
             valid_selection = true;
-            Some(StorageFormat::JSON)
+            Some(StorageFormat::Json)
         } else if selection.as_str() == "3" {
             valid_selection = true;
             Some(StorageFormat::Sqlite)

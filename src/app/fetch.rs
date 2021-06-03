@@ -63,10 +63,7 @@ pub async fn fetch(f: Fetch, config: Config) -> Result<()> {
         None => 1000,
     };
 
-    let from = match f.from {
-        Some(from) => from,
-        None => 0,
-    };
+    let from = f.from.unwrap_or(0);
 
     let to = match f.to {
         Some(to) => to,
