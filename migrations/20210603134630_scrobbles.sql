@@ -1,18 +1,18 @@
 -- drop table if it exists
-drop table scrobbles;
+drop table if exists scrobbles;
 
 create table scrobbles
 (
-    id            serial not null
+    id            integer not null
         constraint scrobbles_pk
             primary key autoincrement,
-    track         text   not null,
-    artist        text   not null,
+    track         text    not null,
+    artist        text    not null,
     album         text,
-    loved         int    not null
+    loved         integer not null
         check (loved in (0, 1)),
     -- local timestamp will be provided in a view
-    timestamp_utc int    not null
+    timestamp_utc integer not null
 );
 
 -- descending index for timestamps
@@ -28,7 +28,7 @@ unique index scrobbles_timestamp_utc_uindex
 -- select datetime('1622728549', 'unixepoch', 'localtime');
 
 -- drop view if it exists
-drop view scrobbles_local;
+drop view if exists scrobbles_local;
 
 create view scrobbles_local as
 select track,
