@@ -1,10 +1,12 @@
+use std::{fs, io};
 use std::fs::File;
 use std::io::{BufReader, BufWriter};
 use std::path::{Path, PathBuf};
-use std::{fs, io};
 
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
+
+use crate::data::db;
 
 static CRATE_NAME: &str = env!("CARGO_CRATE_NAME");
 
@@ -20,7 +22,7 @@ pub fn initialize_config() -> Result<()> {
 
     let api_key = set_api_key();
     let username = set_username();
-    let storage_format = set_storage_format();
+    let storage_format = set_storage_format()?;
 
     let config = Config::new(api_key, username, storage_format);
 
@@ -61,7 +63,7 @@ pub fn update_config() -> Result<()> {
         .expect("Failed to read user selection");
 
     if choice.trim() == "y" {
-        storage_format = set_storage_format();
+        storage_format = set_storage_format()?;
     }
 
     config = Config::new(api_key, username, storage_format);
@@ -91,7 +93,7 @@ fn set_username() -> String {
     username.trim().to_string()
 }
 
-fn set_storage_format() -> StorageFormat {
+fn set_storage_format() -> Result<StorageFormat> {
     let mut valid_selection = false;
     let mut selection = String::new();
     let mut storage_format = None;
@@ -123,15 +125,15 @@ fn set_storage_format() -> StorageFormat {
         };
     }
 
+    // We can safely unwrap here because `storage_format` should have a value
     let storage_format = storage_format.unwrap();
 
-    if storage_format == StorageFormat::Sqlite {
+    if let StorageFormat::Sqlite = storage_format {
         println!("Sqlite storage format was selected. Building database now...");
-        db::build_sqlite_database();
+        db::build_sqlite_database()?;
     }
 
-    // We can safely unwrap here because `storage_format` should have a value
-    storage_format
+    Ok(storage_format)
 }
 
 pub fn check_if_config_exists() -> bool {
@@ -190,7 +192,7 @@ impl Config {
         let storage_format = match self.storage_format {
             StorageFormat::Csv => "CSV",
             StorageFormat::Json => "JSON",
-            StorageFormat:: Sqlite => "Sqlite",
+            StorageFormat::Sqlite => "Sqlite",
         };
 
         println!("Current Configuration:");

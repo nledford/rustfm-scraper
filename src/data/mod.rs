@@ -7,7 +7,7 @@ use crate::models::recent_tracks::Track;
 use crate::models::saved_scrobbles::SavedScrobbles;
 
 mod csv;
-mod db;
+pub mod db;
 mod json;
 
 fn validate_extension(extension: &str) {
