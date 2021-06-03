@@ -1,10 +1,10 @@
 use anyhow::Result;
 use num_format::ToFormattedString;
 
-use crate::app::Fetch;
-use crate::config::Config;
-use crate::models::saved_scrobbles::SavedScrobbles;
 use crate::{files, lastfm, utils};
+use crate::app::Fetch;
+use crate::config::{Config, StorageFormat};
+use crate::models::saved_scrobbles::SavedScrobbles;
 
 pub async fn fetch(f: Fetch, config: Config) -> Result<()> {
     let username = match f.username {
@@ -18,10 +18,13 @@ pub async fn fetch(f: Fetch, config: Config) -> Result<()> {
     println!("Username: {}", user.name);
     println!("Number of scrobbles: {}", user.play_count_formatted());
 
-    let file_format = match f.file_format {
-        Some(format) => format,
-        None => "json".to_string(),
+    let file_format = match config.storage_format {
+        StorageFormat::Csv => "csv",
+        StorageFormat::Json => "json",
+        StorageFormat::Sqlite => "db",
     };
+
+    // TODO handle sqlite files
 
     let mut saved_tracks = if !f.new_file {
         match files::load_from_file(&user.name, &file_format) {
@@ -91,7 +94,7 @@ pub async fn fetch(f: Fetch, config: Config) -> Result<()> {
         min_timestamp,
         to,
     )
-    .await?;
+        .await?;
 
     if new_tracks.is_empty() {
         println!("No new tracks were retrieved from Last.fm");
