@@ -1,7 +1,10 @@
+use clap::Clap;
+
+use crate::app::config::ConfigSubCommand;
+
+pub mod config;
 pub mod fetch;
 pub mod stats;
-
-use clap::Clap;
 
 /// Provides commands to download your listening history from Last.fm and export it to several formats
 #[derive(Clap)]
@@ -11,13 +14,21 @@ pub struct Opts {
     pub subcmd: SubCommand,
 }
 
+/// Application subcommands, which include configuring the application, fetching data from Last.fm, and crunching statistics
 #[derive(Clap)]
 pub enum SubCommand {
+    Config(Config),
     Fetch(Fetch),
     Stats(Stats),
 }
 
-// TODO add config subcommand and allow a default file location to be set
+/// Provides commands for interacting with the application's configuration file
+#[derive(Clap)]
+pub struct Config {
+    #[clap(subcommand)]
+    pub subcmd: ConfigSubCommand,
+}
+
 
 /// A subcommand for fetching your listening history from Last.fm
 #[derive(Clap)]

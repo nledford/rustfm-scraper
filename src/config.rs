@@ -27,6 +27,47 @@ pub fn initialize_config() -> Result<()> {
     config.save_config()
 }
 
+/// Allows the user to change settings in the configuration file
+pub fn update_config() -> Result<()> {
+    let mut config = Config::load_config()?;
+
+    let mut api_key = config.api_key;
+    let mut username = config.default_username;
+    let mut storage_format = config.storage_format;
+
+    let mut choice = String::new();
+
+    println!("Update API key? (y/n)");
+    io::stdin()
+        .read_line(&mut choice)
+        .expect("Failed to read user selection");
+
+    if choice.trim() == "y" {
+        api_key = set_api_key();
+    }
+
+    println!("Update default username? (y/n)");
+    io::stdin()
+        .read_line(&mut choice)
+        .expect("Failed to read user selection");
+
+    if choice.trim() == "y" {
+        username = set_username();
+    }
+
+    println!("Update storage format? (y/n)");
+    io::stdin()
+        .read_line(&mut choice)
+        .expect("Failed to read user selection");
+
+    if choice.trim() == "y" {
+        storage_format = set_storage_format();
+    }
+
+    config = Config::new(api_key, username, storage_format);
+    config.save_config()
+}
+
 fn set_api_key() -> String {
     println!("Enter your Last.fm API key: ");
     let mut api_key = String::new();
@@ -65,13 +106,15 @@ fn set_storage_format() -> StorageFormat {
             .read_line(&mut selection)
             .expect("Failed to read selection");
 
-        storage_format = if selection.as_str() == "1" {
+        let trimmed = selection.trim();
+
+        storage_format = if trimmed == "1" {
             valid_selection = true;
             Some(StorageFormat::Csv)
-        } else if selection.as_str() == "2" {
+        } else if trimmed == "2" {
             valid_selection = true;
             Some(StorageFormat::Json)
-        } else if selection.as_str() == "3" {
+        } else if trimmed == "3" {
             valid_selection = true;
             Some(StorageFormat::Sqlite)
         } else {
@@ -126,6 +169,30 @@ impl Config {
         serde_json::to_writer(writer, &self)?;
 
         Ok(())
+    }
+
+    /// Deletes the configuration file
+    pub fn delete_config(&self) -> Result<()> {
+        let config_path = build_config_path();
+        fs::remove_file(config_path)?;
+        Ok(())
+    }
+
+    /// Prints the contents of the configuration file to the console.
+    pub fn print_config(&self, full_config: bool) {
+        let storage_format = match self.storage_format {
+            StorageFormat::Csv => "CSV",
+            StorageFormat::Json => "JSON",
+            StorageFormat:: Sqlite => "Sqlite",
+        };
+
+        println!("Current Configuration:");
+        println!("Default Last.fm username: {}", self.default_username);
+        println!("Default storage format: {}", storage_format);
+
+        if full_config {
+            println!("Current Last.fm API key: {}", self.api_key);
+        }
     }
 }
 
