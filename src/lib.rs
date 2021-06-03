@@ -20,7 +20,7 @@
 
 pub mod app;
 pub mod config;
-pub mod files;
+pub mod data;
 pub mod lastfm;
 pub mod models;
 pub mod stats;

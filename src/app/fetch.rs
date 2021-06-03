@@ -1,7 +1,7 @@
 use anyhow::Result;
 use num_format::ToFormattedString;
 
-use crate::{files, lastfm, utils};
+use crate::{data, lastfm, utils};
 use crate::app::Fetch;
 use crate::config::{Config, StorageFormat};
 use crate::models::saved_scrobbles::SavedScrobbles;
@@ -27,7 +27,7 @@ pub async fn fetch(f: Fetch, config: Config) -> Result<()> {
     // TODO handle sqlite files
 
     let mut saved_tracks = if !f.new_file {
-        match files::load_from_file(&user.name, &file_format) {
+        match data::load_from_file(&user.name, &file_format) {
             Ok(saved_scrobbles) => saved_scrobbles,
             Err(_) => {
                 println!(
@@ -110,13 +110,13 @@ pub async fn fetch(f: Fetch, config: Config) -> Result<()> {
                 new_tracks_len.to_formatted_string(&utils::get_locale())
             ),
         }
-        files::append_to_file(&new_tracks, &mut saved_tracks, &user.name, &file_format)?
+        data::append_to_file(&new_tracks, &mut saved_tracks, &user.name, &file_format)?
     } else {
         println!(
             "Saving {} tracks to file...",
             &new_tracks.len().to_formatted_string(&utils::get_locale())
         );
-        files::save_to_file(&new_tracks, &user.name, &file_format)?
+        data::save_to_file(&new_tracks, &user.name, &file_format)?
     };
 
     if new_total != user.play_count() && !f.current_day {

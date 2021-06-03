@@ -1,7 +1,7 @@
 use anyhow::Result;
 
 use crate::config::Config;
-use crate::{app, files};
+use crate::{app, data};
 
 pub fn stats(s: app::Stats, config: Config) -> Result<()> {
     let username = match s.username {
@@ -9,7 +9,7 @@ pub fn stats(s: app::Stats, config: Config) -> Result<()> {
         None => config.default_username,
     };
 
-    match files::find_which_file_exists(&username)? {
+    match data::find_which_file_exists(&username)? {
         Some(_) => true,
         None => {
             println!(
@@ -20,7 +20,7 @@ pub fn stats(s: app::Stats, config: Config) -> Result<()> {
         }
     };
 
-    let saved_scrobbles = files::load_from_any_file(&username)?;
+    let saved_scrobbles = data::load_from_any_file(&username)?;
 
     println!("Crunching stats for {}...\n", &username);
     let stats = saved_scrobbles.generate_stats();

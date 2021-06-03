@@ -1,11 +1,11 @@
 use anyhow::{Context, Result};
 
-use crate::files;
+use crate::data;
 use crate::models::recent_tracks::Track;
 use crate::models::saved_scrobbles::SavedScrobbles;
 
 pub fn save_to_csv(scrobbles: &[Track], username: &str) -> Result<i32> {
-    let file = files::build_file_path(username, "csv")?;
+    let file = data::build_file_path(username, "csv")?;
 
     let scrobbles = SavedScrobbles::from_scrobbles(scrobbles);
 
@@ -21,7 +21,7 @@ pub fn append_to_csv(
     saved_scrobbles: &mut SavedScrobbles,
     username: &str,
 ) -> Result<i32> {
-    let file = files::build_file_path(username, "csv")?;
+    let file = data::build_file_path(username, "csv")?;
 
     saved_scrobbles.append_new_scrobbles(scrobbles);
 
@@ -35,7 +35,7 @@ pub fn append_to_csv(
 pub fn load_from_csv(username: &str) -> Result<SavedScrobbles> {
     println!("Loading saved scrobbles from `{}.csv`...", username);
 
-    let file = files::build_file_path(username, "csv")?;
+    let file = data::build_file_path(username, "csv")?;
 
     let mut rdr = csv::Reader::from_path(file).context("Error creating csv reader")?;
     let saved_scrobbles = SavedScrobbles::from_csv_reader(&mut rdr);
