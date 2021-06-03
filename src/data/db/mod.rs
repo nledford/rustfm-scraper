@@ -30,13 +30,13 @@ pub fn build_sqlite_database() -> Result<()> {
     let _ = build_connection_string();
 
     // Create the database
-    let _create = Command::new("sqlx-cli")
+    let _create = Command::new("sqlx")
         .arg("database")
         .arg("create")
         .output()
-        .expect("Failed to create database with `sqlx-cli`");
+        .expect("Failed to create database");
 
-    let _migrations = Command::new("sqlx-cli")
+    let _migrations = Command::new("sqlx")
         .arg("migrate")
         .arg("run")
         .output()
