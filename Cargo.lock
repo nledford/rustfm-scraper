@@ -1638,7 +1638,7 @@ checksum = "410f7acf3cb3a44527c5d9546bad4bf4e6c460915d5f9f2fc524498bfe8f70ce"
 
 [[package]]
 name = "rustfm-scraper"
-version = "0.2.28"
+version = "1.0.0"
 dependencies = [
  "anyhow",
  "assert_cmd",
