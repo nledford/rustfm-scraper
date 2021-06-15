@@ -59,7 +59,7 @@ pub async fn get_sqlite_pool() -> Result<SqlitePool> {
     Ok(pool)
 }
 
-pub async fn insert_scrobbles(scrobbles: SavedScrobbles, pool: &SqlitePool) -> Result<i64> {
+pub async fn insert_scrobbles(scrobbles: SavedScrobbles, pool: &SqlitePool) -> Result<i32> {
     let mut count = 0;
 
     for scrobble in scrobbles.get_saved_scrobbles() {
