@@ -16,9 +16,8 @@ create table scrobbles
 );
 
 -- descending index for timestamps
-create
-unique index scrobbles_timestamp_utc_uindex
-	on scrobbles (timestamp_utc desc);
+create index scrobbles_timestamp_utc_uindex
+    on scrobbles (timestamp_utc desc);
 
 -- scrobbles_local view
 -- more or less the same as the table, but provides timestamp in local time
