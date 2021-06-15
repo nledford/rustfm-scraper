@@ -96,6 +96,10 @@ impl SavedScrobbles {
             .to_formatted_string(&utils::get_locale())
     }
 
+    pub fn get_saved_scrobbles(&self) -> Vec<SavedScrobble> {
+        return self.saved_scrobbles.clone()
+    }
+
     pub fn is_empty(&self) -> bool {
         self.saved_scrobbles.is_empty()
     }

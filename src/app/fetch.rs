@@ -5,6 +5,7 @@ use crate::{data, lastfm, utils};
 use crate::app::Fetch;
 use crate::config::{Config, StorageFormat};
 use crate::models::saved_scrobbles::SavedScrobbles;
+use crate::data::db;
 
 pub async fn fetch(f: Fetch, config: Config) -> Result<()> {
     let username = match f.username {
@@ -26,7 +27,41 @@ pub async fn fetch(f: Fetch, config: Config) -> Result<()> {
 
     // TODO handle sqlite files
 
-    let mut saved_tracks = if !f.new_file {
+    // Timestamp from sqlite database, if used
+    let mut most_recent_timestamp: i64 = 0;
+
+    // Data from CSV/JSON files
+    let mut saved_tracks: SavedScrobbles = SavedScrobbles::default();
+
+    if !f.new_file {
+        if file_format == "db" {
+            let pool = db::get_sqlite_pool().await?;
+            // most_recent_timestamp = db::get_most_recent_scrobble(&pool).await?;
+
+            most_recent_timestamp = match db::get_most_recent_scrobble(&pool).await {
+                Ok(timestamp) => timestamp,
+                Err(_) => {
+                    println!("Existing Sqlite database not found. Creating one now...");
+                    db::build_sqlite_database()?;
+                    0
+                }
+            }
+
+        } else {
+            saved_tracks = match data::load_from_file(&user.name, &file_format) {
+                Ok(saved_scrobbles) => saved_scrobbles,
+                Err(_) => {
+                    println!(
+                        "Existing file for `{}` not found. Creating new file...",
+                        &user.name
+                    );
+                    SavedScrobbles::default()
+                }
+            }
+        }
+    }
+
+    /*let mut saved_tracks = if !f.new_file {
         match data::load_from_file(&user.name, &file_format) {
             Ok(saved_scrobbles) => saved_scrobbles,
             Err(_) => {
@@ -40,7 +75,7 @@ pub async fn fetch(f: Fetch, config: Config) -> Result<()> {
     } else {
         println!("Creating new file...");
         SavedScrobbles::default()
-    };
+    };*/
 
     let page = match f.page {
         Some(page) => {
@@ -77,10 +112,14 @@ pub async fn fetch(f: Fetch, config: Config) -> Result<()> {
         use chrono::prelude::*;
 
         Utc::now().date().and_hms(0, 0, 0).timestamp()
-    } else if !saved_tracks.is_empty() {
-        match saved_tracks.most_recent_scrobble() {
-            Some(track) => track.timestamp_utc + 10,
-            None => 0,
+    } else if !saved_tracks.is_empty() || most_recent_timestamp != 0 {
+        if !saved_tracks.is_empty() {
+            match saved_tracks.most_recent_scrobble() {
+                Some(track) => track.timestamp_utc + 9,
+                None => -1,
+            }
+        } else {
+            most_recent_timestamp
         }
     } else {
         from
@@ -102,7 +141,7 @@ pub async fn fetch(f: Fetch, config: Config) -> Result<()> {
     }
 
     let new_tracks_len = &new_tracks.len();
-    let new_total = if !saved_tracks.is_empty() {
+    /*let new_total = if !saved_tracks.is_empty() {
         match new_tracks_len {
             1 => println!("Saving one new track to existing file..."),
             _ => println!(
@@ -117,7 +156,45 @@ pub async fn fetch(f: Fetch, config: Config) -> Result<()> {
             &new_tracks.len().to_formatted_string(&utils::get_locale())
         );
         data::save_to_file(&new_tracks, &user.name, &file_format)?
-    };
+    };*/
+
+    let mut new_total = 0;
+    if file_format != "db" {
+        new_total = if !saved_tracks.is_empty() {
+            match new_tracks_len {
+                1 => println!("Saving one new track to existing file..."),
+                _ => println!(
+                    "Saving {} new tracks to existing file...",
+                    new_tracks_len.to_formatted_string(&utils::get_locale())
+                ),
+            }
+            data::append_to_file(&new_tracks, &mut saved_tracks, &user.name, &file_format)?
+        } else {
+            println!(
+                "Saving {} tracks to file...",
+                &new_tracks.len().to_formatted_string(&utils::get_locale())
+            );
+            data::save_to_file(&new_tracks, &user.name, &file_format)?
+        };
+    } else {
+        if most_recent_timestamp != 0 {
+            match new_tracks_len {
+                1 => println!("Saving one new track to existing file..."),
+                _ => println!(
+                    "Saving {} new tracks to existing file...",
+                    new_tracks_len.to_formatted_string(&utils::get_locale())
+                ),
+            }
+        } else {
+            println!(
+                "Saving {} tracks to file...",
+                &new_tracks.len().to_formatted_string(&utils::get_locale())
+            );
+        }
+        let new_scrobbles = SavedScrobbles::from_scrobbles(&new_tracks);
+        let pool = db::get_sqlite_pool().await?;
+        db::insert_scrobbles(new_scrobbles, &pool).await?;
+    }
 
     if new_total != user.play_count() && !f.current_day {
         println!(
