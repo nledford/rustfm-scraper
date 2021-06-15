@@ -193,7 +193,7 @@ pub async fn fetch(f: Fetch, config: Config) -> Result<()> {
         }
         let new_scrobbles = SavedScrobbles::from_scrobbles(&new_tracks);
         let pool = db::get_sqlite_pool().await?;
-        db::insert_scrobbles(new_scrobbles, &pool).await?;
+        new_total = db::insert_scrobbles(new_scrobbles, &pool).await?;
     }
 
     if new_total != user.play_count() && !f.current_day {
