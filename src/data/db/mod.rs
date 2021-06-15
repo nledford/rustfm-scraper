@@ -102,7 +102,9 @@ pub async fn get_most_recent_scrobble(pool: &SqlitePool) -> Result<i64> {
         .fetch_one(pool)
         .await?;
 
-    Ok(most_recent_scrobble.0)
+    let most_recent_scrobble = most_recent_scrobble.0 + 10;
+
+    Ok(most_recent_scrobble)
 }
 
 /*pub async fn get_scrobbles(pool: &SqlitePool) -> Result<Vec<SavedScrobble>> {
