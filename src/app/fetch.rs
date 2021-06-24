@@ -1,11 +1,11 @@
 use anyhow::Result;
 use num_format::ToFormattedString;
 
-use crate::{data, lastfm, utils};
 use crate::app::Fetch;
 use crate::config::{Config, StorageFormat};
-use crate::models::saved_scrobbles::SavedScrobbles;
 use crate::data::db;
+use crate::models::saved_scrobbles::SavedScrobbles;
+use crate::{data, lastfm, utils};
 
 pub async fn fetch(f: Fetch, config: Config) -> Result<()> {
     let username = match f.username {
@@ -46,7 +46,6 @@ pub async fn fetch(f: Fetch, config: Config) -> Result<()> {
                     0
                 }
             }
-
         } else {
             saved_tracks = match data::load_from_file(&user.name, &file_format) {
                 Ok(saved_scrobbles) => saved_scrobbles,
@@ -133,7 +132,7 @@ pub async fn fetch(f: Fetch, config: Config) -> Result<()> {
         min_timestamp,
         to,
     )
-        .await?;
+    .await?;
 
     if new_tracks.is_empty() {
         println!("No new tracks were retrieved from Last.fm");

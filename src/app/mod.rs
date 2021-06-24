@@ -29,7 +29,6 @@ pub struct Config {
     pub subcmd: ConfigSubCommand,
 }
 
-
 /// A subcommand for fetching your listening history from Last.fm
 #[derive(Clap)]
 pub struct Fetch {

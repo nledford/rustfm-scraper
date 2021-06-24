@@ -3,10 +3,10 @@ use std::env;
 use anyhow::Result;
 use clap::Clap;
 
-use rustfm_scraper::{app, config};
-use rustfm_scraper::app::{Opts, SubCommand};
 use rustfm_scraper::app::config::ConfigSubCommand;
+use rustfm_scraper::app::{Opts, SubCommand};
 use rustfm_scraper::config::Config;
+use rustfm_scraper::{app, config};
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -26,7 +26,7 @@ async fn main() -> Result<()> {
             ConfigSubCommand::Delete(_) => config.delete_config()?,
             ConfigSubCommand::Print(p) => config.print_config(p.full_config),
             ConfigSubCommand::Update(_) => config::update_config()?,
-        }
+        },
         SubCommand::Fetch(f) => app::fetch::fetch(f, config).await?,
         SubCommand::Stats(s) => app::stats::stats(s, config)?,
     }

@@ -97,7 +97,7 @@ impl SavedScrobbles {
     }
 
     pub fn get_saved_scrobbles(&self) -> Vec<SavedScrobble> {
-        return self.saved_scrobbles.clone()
+        return self.saved_scrobbles.clone();
     }
 
     pub fn is_empty(&self) -> bool {

@@ -1,11 +1,10 @@
-
 use clap::Clap;
 
 #[derive(Clap)]
 pub enum ConfigSubCommand {
     Delete(Delete),
     Print(Print),
-    Update(Update)
+    Update(Update),
 }
 
 #[derive(Clap)]

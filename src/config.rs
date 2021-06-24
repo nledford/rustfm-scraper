@@ -1,7 +1,7 @@
-use std::{fs, io};
 use std::fs::File;
 use std::io::{BufReader, BufWriter};
 use std::path::{Path, PathBuf};
+use std::{fs, io};
 
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
