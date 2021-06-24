@@ -38,7 +38,94 @@ create view scrobbles_local as
 select track,
        artist,
        album,
-       case when loved = 0 then 'false' else 'true' end  loved,
+       track_artist,
+       album_artist,
+       track_artist_album,
+       loved,
        timestamp_utc,
-       datetime(timestamp_utc, 'unixepoch', 'localtime') timestamp_local
-from scrobbles
+       timestamp_local,
+       scrobbled_today,
+       track_first_scrobbled,
+       CASE
+           WHEN date(track_first_scrobbled) = date('now')
+               THEN 'true'
+           ELSE 'false'
+           END track_first_scrobbled_today,
+       track_album_first_scrobbled,
+       CASE
+           WHEN DATE(track_album_first_scrobbled) = DATE('now')
+               THEN 'true'
+           ELSE 'false'
+           END track_album_first_scrobbled_today,
+       date,
+       year,
+       month_num,
+       CASE CAST(month_num AS integer)
+           WHEN 1 THEN 'January'
+           WHEN 2 THEN 'February'
+           WHEN 3 THEN 'March'
+           WHEN 4 THEN 'April'
+           WHEN 5 THEN 'May'
+           WHEN 6 THEN 'June'
+           WHEN 7 THEN 'July'
+           WHEN 8 THEN 'August'
+           WHEN 9 THEN 'September'
+           WHEN 10 THEN 'October'
+           WHEN 11 THEN 'November'
+           ELSE 'December'
+           END month,
+       day_num,
+       CASE CAST(day_num AS integer)
+           WHEN 0 THEN 'Sunday'
+           WHEN 1 THEN 'Monday'
+           WHEN 2 THEN 'Tuesday'
+           WHEN 3 THEN 'Wednesday'
+           WHEN 4 THEN 'Thursday'
+           WHEN 5 THEN 'Friday'
+           ELSE 'Saturday'
+           END day,
+       time,
+       hour
+from (
+         select track,
+                artist,
+                album,
+                track_artist,
+                album_artist,
+                track_artist_album,
+                loved,
+                timestamp_utc,
+                timestamp_local,
+                (SELECT MIN(datetime(timestamp_utc, 'unixepoch', 'localtime'))
+                 FROM scrobbles fs
+                 WHERE fs.track = sl.track
+                   AND fs.artist = sl.artist)                    track_first_scrobbled,
+                (SELECT MIN(datetime(timestamp_utc, 'unixepoch', 'localtime'))
+                 FROM scrobbles fs
+                 WHERE fs.track = sl.track
+                   AND fs.artist = sl.artist
+                   AND fs.album = sl.album)                      track_album_first_scrobbled,
+                date(timestamp_local)                            date,
+                strftime('%Y', timestamp_local)                  year,
+                strftime('%m', timestamp_local)                  month_num,
+                strftime('%d', timestamp_local)                  day_num,
+                time(timestamp_local)                            time,
+                CAST(strftime('%H', timestamp_local) AS integer) hour,
+                CASE
+                    WHEN date(timestamp_local) = date('now')
+                        THEN 'true'
+                    ELSE 'false'
+                    END                                          scrobbled_today
+         from (
+                  select track,
+                         artist,
+                         album,
+                         (track || ' - ' || artist)                        track_artist,
+                         (album || ' - ' || artist)                        album_artist,
+                         (track || ' - ' || artist || ' - ' || album)      track_artist_album,
+                         case when loved = 0 then 'false' else 'true' end  loved,
+                         timestamp_utc,
+                         datetime(timestamp_utc, 'unixepoch', 'localtime') timestamp_local
+                  from scrobbles
+              ) sl
+     ) s
