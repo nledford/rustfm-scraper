@@ -23,6 +23,18 @@ install_crate = "cargo-sort-ck"
 command = "cargo-sort-ck"
 args = ["-w"]
 
+# Upgrade all crates
+[tasks.upgrade]
+install_crate = "cargo-edit"
+command = "cargo"
+args = ["upgrade"]
+
+# Update all crates
+[tasks.update]
+command = "cargo"
+args = ["update"]
+dependencies = ["upgrade"]
+
 # Installs application on local computer
 [tasks.install]
 command = "cargo"
@@ -31,7 +43,7 @@ args = ["install","--path","."]
 # publishes application to Crates.io
 [tasks.publish]
 command = "cargo"
-args = "publish"
+args = ["publish"]
 
 # Runs application using development build
 [tasks.run]
