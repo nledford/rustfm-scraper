@@ -39,7 +39,7 @@ select track,
        artist,
        album,
        track_artist,
-       album_artist,
+       artist_album,
        track_artist_album,
        loved,
        timestamp_utc,
@@ -91,8 +91,8 @@ from (
                 artist,
                 album,
                 track_artist,
-                album_artist,
-                track_artist_album,
+                (artist || ' - ' || album)                       artist_album,
+                (track || ' - ' || artist || ' - ' || album)     track_artist_album,
                 loved,
                 timestamp_utc,
                 timestamp_local,
@@ -119,11 +119,17 @@ from (
          from (
                   select track,
                          artist,
-                         album,
+                         CASE
+                             WHEN album = '' OR album IS NULL
+                                 THEN 'N/A'
+                             ELSE album
+                             END                                           album,
                          (track || ' - ' || artist)                        track_artist,
-                         (album || ' - ' || artist)                        album_artist,
-                         (track || ' - ' || artist || ' - ' || album)      track_artist_album,
-                         case when loved = 0 then 'false' else 'true' end  loved,
+                         CASE
+                             WHEN loved = 0
+                                 THEN 'false'
+                             ELSE 'true'
+                             END                                           loved,
                          timestamp_utc,
                          datetime(timestamp_utc, 'unixepoch', 'localtime') timestamp_local
                   from scrobbles
