@@ -21,12 +21,12 @@ create index scrobbles_timestamp_utc_uindex
 
 -- index on tracks, artists, and albums
 create index scrobbles_tracks on scrobbles (track);
+create index scrobbles_tracks_artists on scrobbles (track, artist);
+create index scrobbles_tracks_artists_albums on scrobbles (track, artist, album);
 create index scrobbles_artists on scrobbles (artist);
 create index scrobbles_albums on scrobbles (album);
 
 -- scrobbles_local view
--- more or less the same as the table, but provides timestamp in local time
--- as well as a true/false column for boolean values
 
 -- example:
 -- select datetime('1622728549', 'unixepoch', 'localtime');
