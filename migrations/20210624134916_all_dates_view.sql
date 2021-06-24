@@ -7,13 +7,14 @@ WITH RECURSIVE dates(date) AS (
     SELECT MIN(date)
     FROM scrobbles_local
     UNION ALL
-    SELECT date(date, '+1 day')
+    SELECT
+        date (date, '+1 day')
         FROM dates
-        WHERE date < date('now')
+        WHERE date < date ('now')
         )
 SELECT date,
     strftime('%Y', date) year,
     strftime('%m', date) month_num,
     strftime('%d', date) day_num,
-    date = date('now') is_today
+    date = date ('now') is_today
 from dates;
