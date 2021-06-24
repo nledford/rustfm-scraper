@@ -158,7 +158,7 @@ pub async fn fetch(f: Fetch, config: Config) -> Result<()> {
         data::save_to_file(&new_tracks, &user.name, &file_format)?
     };*/
 
-    let mut new_total = 0;
+    let new_total;
     if file_format != "db" {
         new_total = if !saved_tracks.is_empty() {
             match new_tracks_len {
