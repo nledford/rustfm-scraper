@@ -1,4 +1,4 @@
-use clap::Clap;
+use clap::Parser;
 
 use crate::app::config::ConfigSubCommand;
 
@@ -7,7 +7,7 @@ pub mod fetch;
 pub mod stats;
 
 /// Provides commands to download your listening history from Last.fm and export it to several formats
-#[derive(Clap)]
+#[derive(Parser)]
 #[clap(version = "1.0", author = "Nathaniel Ledford <nate@nateledford.com>")]
 pub struct Opts {
     #[clap(subcommand)]
@@ -15,7 +15,7 @@ pub struct Opts {
 }
 
 /// Application subcommands, which include configuring the application, fetching data from Last.fm, and crunching statistics
-#[derive(Clap)]
+#[derive(Parser)]
 pub enum SubCommand {
     Config(Config),
     Fetch(Fetch),
@@ -23,14 +23,14 @@ pub enum SubCommand {
 }
 
 /// Provides commands for interacting with the application's configuration file
-#[derive(Clap)]
+#[derive(Parser)]
 pub struct Config {
     #[clap(subcommand)]
     pub subcmd: ConfigSubCommand,
 }
 
 /// A subcommand for fetching your listening history from Last.fm
-#[derive(Clap)]
+#[derive(Parser)]
 pub struct Fetch {
     /// A Last.fm username
     #[clap(short)]
@@ -56,7 +56,7 @@ pub struct Fetch {
 }
 
 /// A subcommand for calculating stats from a saved file
-#[derive(Clap)]
+#[derive(Parser)]
 pub struct Stats {
     /// A Last.fm username
     #[clap(short)]
