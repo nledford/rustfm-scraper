@@ -1,7 +1,7 @@
 use std::env;
 
 use anyhow::Result;
-use clap::Clap;
+use clap::Parser;
 
 use rustfm_scraper::app::config::ConfigSubCommand;
 use rustfm_scraper::app::{Opts, SubCommand};

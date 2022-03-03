@@ -84,15 +84,15 @@ async fn insert_scrobble(scrobble: SavedScrobble, pool: &SqlitePool) -> Result<i
         scrobble.loved,
         scrobble.timestamp_utc,
     )
-    .execute(&mut conn)
-    .await?
-    .last_insert_rowid();
+        .execute(&mut conn)
+        .await?
+        .last_insert_rowid();
 
     Ok(id)
 }
 
 pub async fn get_most_recent_scrobble(pool: &SqlitePool) -> Result<i64> {
-    let most_recent_scrobble: (i64,) = sqlx::query_as(
+    let most_recent_scrobble: (i64, ) = sqlx::query_as(
         r#"
         SELECT timestamp_utc
         FROM scrobbles
@@ -100,8 +100,8 @@ pub async fn get_most_recent_scrobble(pool: &SqlitePool) -> Result<i64> {
         DESC LIMIT 1
         "#,
     )
-    .fetch_one(pool)
-    .await?;
+        .fetch_one(pool)
+        .await?;
 
     let most_recent_scrobble = most_recent_scrobble.0 + 10;
 
