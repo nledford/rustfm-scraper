@@ -11,6 +11,18 @@ use sqlx::SqlitePool;
 use crate::config::Config;
 use crate::models::saved_scrobbles::{SavedScrobble, SavedScrobbles};
 
+fn build_database_name() -> Result<String> {
+    let config = Config::load_config()?;
+    let db = format!("{}.db", config.default_username);
+
+    return Ok(db);
+}
+
+fn check_if_sqlite_database_exists() -> Result<bool> {
+    let db_name = build_database_name()?;
+    return Ok(Path::new(db_name.as_str()).exists())
+}
+
 fn build_connection_string() -> Result<String> {
     let config = Config::load_config()?;
     let connection_string = format!("sqlite:{}.db", config.default_username);
@@ -22,9 +34,9 @@ fn build_connection_string() -> Result<String> {
 
 pub fn build_sqlite_database() -> Result<()> {
     // Check if sqlite database already exists
-    if Path::new("nateledford.db").exists() {
+    if check_if_sqlite_database_exists()? {
         // No need to re-create, return early
-        return Ok(());
+        return Ok(())
     }
 
     // We just want to set the environment variable
@@ -47,6 +59,10 @@ pub fn build_sqlite_database() -> Result<()> {
 }
 
 pub async fn get_sqlite_pool() -> Result<SqlitePool> {
+    if !check_if_sqlite_database_exists()? {
+        build_sqlite_database()?
+    }
+
     let connection_string = build_connection_string()?;
 
     let options = SqliteConnectOptions::from_str(&connection_string)?
